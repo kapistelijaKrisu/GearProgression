@@ -2,7 +2,11 @@
 
 Yleisiä linkkejä:
 
-* [Linkki sovellukseeni](https://www.cs.helsinki.fi)
+* [Linkki sovellukseeni](http://kbvalto.users.cs.helsinki.fi/GearProgression)
+* [Linkki katsastukselle](http://kbvalto.users.cs.helsinki.fi/GearProgression/overview)
+* [Linkki kirjautumiseen](http://kbvalto.users.cs.helsinki.fi/GearProgression/login)
+* [Linkki pelaajan sivulle](http://kbvalto.users.cs.helsinki.fi/GearProgression/mypage)
+* [Linkki yksittäiselle hahmon sivulle](http://kbvalto.users.cs.helsinki.fi/GearProgression/character)
 * [Linkki dokumentaatiooni](https://github.com/kapistelijaKrisu/GearProgression/blob/master/doc/dokumentaatio.pdf)
 
 ## Työn aihe
