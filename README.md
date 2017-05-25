@@ -3,7 +3,7 @@
 Yleisiä linkkejä:
 
 * [Linkki sovellukseeni(jäännös)](http://kbvalto.users.cs.helsinki.fi/GearProgression)
-* [Linkki katsastukselle(uus etusivu)](http://kbvalto.users.cs.helsinki.fi/GearProgression/overview)
+* [Linkki katsastukselle(uusi etusivu)](http://kbvalto.users.cs.helsinki.fi/GearProgression/overview)
 * [Linkki kirjautumiseen](http://kbvalto.users.cs.helsinki.fi/GearProgression/login)
 * [Linkki pelaajan sivulle](http://kbvalto.users.cs.helsinki.fi/GearProgression/mypage)
 * [Linkki yksittäiselle hahmon sivulle](http://kbvalto.users.cs.helsinki.fi/GearProgression/character)
