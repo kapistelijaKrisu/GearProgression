@@ -12,6 +12,25 @@ class HelloWorldController extends BaseController{
     $allCla = Clas::all();
     Kint::dump($findCla);
     Kint::dump($allCla);
+    
+    $allPla = Player::findAll();
+    $fPla = Player::findById(1);
+    Kint::dump($allPla);
+    Kint::dump($fPla);
+    
+    $aItem = Item::findAll();
+    $fItem = Item::findById(1);
+    Kint::dump($aItem);
+    Kint::dump($fItem);
+    
+    $aship= Ownership::findAvatarOwnerships(1);
+    $iship = Ownership::findOwnershipsByItemId(1);
+    Kint::dump($aship);
+    Kint::dump($iship);
+    
+    $aa = Avatar::findAll();
+    Kint::dump($aa);
+    
   }
 
     public static function index(){
