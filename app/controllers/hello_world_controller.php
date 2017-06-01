@@ -40,7 +40,6 @@ class HelloWorldController extends BaseController{
   }
 
     public static function index(){
-      // make-metodi renderöi app/views-kansiossa sijaitsevia tiedostoja
    	  View::make('home.html');
     }
     
@@ -54,7 +53,12 @@ class HelloWorldController extends BaseController{
     }
     
     public static function adminPage(){
-      View::make('admin.html');
+        $everything = array(
+            'classes' => Clas::all(),
+            'elements' => Element::all(),
+            'items' => Item::findAll(),
+            'players' => Player::findAll());
+      View::make('admin.html', $everything);
     }
     
     public static function myPage($id){

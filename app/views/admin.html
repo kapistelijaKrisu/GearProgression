@@ -30,12 +30,18 @@
       </tr>
     </thead>
     
-    <tbody>    
-        <td><a> potato</a></td>
+    <tbody>   
+        {% for ele in elements %}
+        <tr>
+          
+        <td><a>{{ele.type}}</a></td>
         <td><form method="post" action="{{base_path}}/admin/delEle">        
-          <button type="submit" name="{{element.id}}" class="btn btn-danger">
-              Delete</button></form></td>  
-      </tbody>
+          <button type="submit" name="{{ele.id}}" class="btn btn-danger">
+              Delete</button></form></td>   
+      </tr>
+      {% endfor %}
+       
+    </tbody>
   </table>
   
   <h2>Classes</h2>
@@ -55,13 +61,18 @@
         <th><label class="label label-danger">Delete</label></th>
        </tr>
     </thead>
+    
     <tbody>    
-      <tr>
-        <td><a> potato</a></td>
+      
+        {% for clas in classes %}
+        <tr>
+        <td><a>{{clas.name}}</a></td>
         <td><form method="post" action="{{base_path}}/admin/delClas">        
           <button type="submit" name="{{clas.id}}" class="btn btn-danger">
               Delete</button></form></td>
-      </tr>
+              </tr>
+        {% endfor %}
+      
       </tbody>
   </table>
   
@@ -82,13 +93,15 @@
         
        </tr>
     </thead>
-    <tbody>    
-      <tr>
-        <td><a> potato</a></td>
+    <tbody>  
+        
+         {% for item in items %}
+         <tr>
+        <td><a>{{item.name}}</a></td>
         <td><form method="post" action="{{base_path}}/admin/delItem">        
           <button type="submit" name="{{item.id}}" class="btn btn-danger">
-              Delete</button></form></td> 
-      </tr>
+              Delete</button></form></td></tr>
+        {% endfor %}        
       </tbody>
   </table>
   
@@ -109,12 +122,17 @@
        </tr>
     </thead>
     <tbody>    
+         {% for p in players %}
       <tr>
-        <td><a> potato</a></td>
+         
+        <td><a>{{p.name}}</a></td>
         <td><form method="post" action="{{base_path}}/admin/delPlayer">        
-          <button type="submit" name="{{player.id}}" class="btn btn-danger">
-              Delete</button></form></td> 
+          <button type="submit" name="{{p.id}}" class="btn btn-danger">
+              Delete</button></form></td>
+              
+              
       </tr>
+      {% endfor %}
     </tbody>
   </table>
   
@@ -132,20 +150,24 @@
               <option value="main">Main</option>
               <option value="alt">Alt</option>
           </select>
+                        
           <select name="element">
-              <option value="potato">Potato</option>
-              <option value="booom">Booom</option>
+              {% for ele in elements %}
+              <option value="{{ele.type}}">{{ele.type}}</option>
+              {% endfor %}
           </select>
           <select name="class">
-              <option value="noob">Noob</option>
-              <option value="wallet">Wallet</option>
+              {% for class in classes %}
+              <option value="{{class.name}}">{{class.name}}</option>
+              {% endfor %}
           </select>
           
       </div>
       <div class="form-group">
           <form>
-              <input type="checkbox" name="stick" value="stick">stick
-              <input type="checkbox" name="mstick" value="mega_stick">mega stick
+              {% for item in items %}
+              <input type="checkbox" name="{{item.name}}" value="{{item.name}}">{{item.name}}
+              {% endfor %}             
       </div>
       <div class="form-group">
           <button type="submit" class="btn btn-primary">Add</button>
