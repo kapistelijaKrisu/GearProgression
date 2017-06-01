@@ -57,5 +57,14 @@ class Item extends BaseModel {
         }
         return null;
     }
+    
+    public function save() {
+        $query = DB::connection()->prepare('INSERT INTO Item (name) VALUES (:name) RETURNING id');
+        $query->execute(array('name' => $this->name));
+        $row = $query->fetch();
+        Kint::trace();
+        Kint::dump($row);
+        $this->id = $row['id'];
+    }
 
 }

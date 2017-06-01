@@ -62,5 +62,13 @@ class Element extends BaseModel {
 
         return $elements;
     }
-
+    
+    public function save() {
+        $query = DB::connection()->prepare('INSERT INTO Element (type) VALUES (:type) RETURNING id');
+        $query->execute(array('type' => $this->type));
+        $row = $query->fetch();
+        Kint::trace();
+        Kint::dump($row);
+        $this->id = $row['id'];
+    }
 }

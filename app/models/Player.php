@@ -42,5 +42,35 @@ class Player extends BaseModel {
         }
         return null;
     }
+    
+    public static function findByName($name) {
+        $query = DB::connection()->prepare('SELECT * FROM Player WHERE name = :name LIMIT 1');
+        $query->execute(array('name' => $name));
+
+        $row = $query->fetch();
+        if ($row) {
+            $player = new Player(array(
+                'id' => $row['id'],
+                'name' => $row['name'],
+                'password' => $row['password'],
+                'admin' => $row['admin']
+            ));
+            return $player;
+        }
+        return null;
+    }
+
+    public function save() {
+        $query = DB::connection()->prepare('INSERT INTO Player (name, password, admin) VALUES (:name, :password, :admin) RETURNING id');
+        $query->execute(array(
+            'name' => $this->name,
+            'password' => $this->password,
+            'boolean' => $this->admin));
+        
+        $row = $query->fetch();
+        Kint::trace();
+        Kint::dump($row);
+        $this->id = $row['id'];
+    }
 
 }

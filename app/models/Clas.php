@@ -42,24 +42,26 @@ public $id, $name;
     }
 
     public static function all() {
-        // Alustetaan kysely tietokantayhteydellämme
         $query = DB::connection()->prepare('SELECT * FROM Clas');
-        // Suoritetaan kysely
         $query->execute();
-        // Haetaan kyselyn tuottamat rivit
         $rows = $query->fetchAll();
         $classes = array();
 
-        // Käydään kyselyn tuottamat rivit läpi
         foreach ($rows as $row) {
-            // Tämä on PHP:n hassu syntaksi alkion lisäämiseksi taulukkoon :)
             $classes[] = new Clas(array(
                 'id' => $row['id'],
-                'name' => $row['name'],
-                            ));
+                'name' => $row['name']));
         }
-
         return $classes;
+    }
+    
+    public function save() {
+        $query = DB::connection()->prepare('INSERT INTO Clas (name) VALUES (:name) RETURNING id');
+        $query->execute(array('name' => $this->name));
+        $row = $query->fetch();
+        Kint::trace();
+        Kint::dump($row);
+        $this->id = $row['id'];
     }
 
 }

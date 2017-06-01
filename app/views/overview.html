@@ -6,6 +6,14 @@
   <div class="alert alert-info">
       {{message}}
   </div>
+  <div class="alert alert-success">
+      <a href="{{base_path}}/myPage/1">to my page</a>
+  </div>
+  <div class="alert alert-danger">
+      <a href="{{base_path}}/admin">to Settings</a>
+  </div>
+  
+  
  
    <table class="table table-striped table-bordered">
     <thead>
@@ -38,12 +46,12 @@
           </td>
         <td><label class="label label-info">{{avatar.e_type}}</label></td>
         <td><label class="label label-info">{{avatar.c_name}}</label></td>     
-        <th><button type="button" class="btn btn-disabled">RIP</button></th>
-        <th><button type="button" class="btn btn-disabled">Owned</button></th>
+        <td><button type="button" class="btn btn-disabled">RIP</button></td>
+        <td><button type="button" class="btn btn-disabled">Owned</button></td>
         
-        <th><form method="post" action="{{base_path}}/delete/{{avatar.id}}">
-                <button type="button" class="btn btn-danger">Delete</button></th>
-        </form>
+        <td><form method="post" action="{{base_path}}/admin/delChar">        
+          <button type="submit" name="{{avatar.id}}" class="btn btn-danger">
+              Delete</button></form></td>   
       </tr>
       {% endfor %}
     </tbody>

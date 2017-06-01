@@ -115,6 +115,23 @@ class Avatar extends BaseModel {
         return null;
     }
     
-    
+    public function save() {
+        $query = DB::connection()->prepare('INSERT INTO Avatar '
+                . '(name, p_id, e_id, c_id, main, stats) VALUES '
+                . '(:name, :p_id, :e_id, :c_id, :main, :stats) RETURNING id');
+        $query->execute(array(
+            'name' => $this->name,
+            'p_id' => $this->p_id,
+            'e_id' => $this->e_id,
+            'c_id' => $this->c_id,
+            'main' => $this->main,
+            'stats' => $this->stats
+                ));
+        
+        $row = $query->fetch();
+        Kint::trace();
+        Kint::dump($row);
+        $this->id = $row['id'];
+    }    
 
 }
