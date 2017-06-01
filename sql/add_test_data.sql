@@ -15,13 +15,13 @@ INSERT INTO Avatar(p_id, e_id, c_id, name, main) VALUES(
 
 INSERT INTO Player(name, password, admin) VALUES ('booom', 321, TRUE);
 INSERT INTO Avatar(p_id, e_id, c_id, name, main) VALUES(
-    (SELECT id FROM Player WHERE name='whale'),
+    (SELECT id FROM Player WHERE name='booom'),
     (SELECT id FROM Element WHERE type='potato'),
     (SELECT id FROM Clas WHERE name='wallet'),
     'whale',
     TRUE);
 INSERT INTO Avatar(p_id, e_id, c_id, name, main) VALUES(
-    (SELECT id FROM Player WHERE name='whale'),
+    (SELECT id FROM Player WHERE name='booom'),
     (SELECT id FROM Element WHERE type='potato'),
     (SELECT id FROM Clas WHERE name='wallet'),
     'derp',

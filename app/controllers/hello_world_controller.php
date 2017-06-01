@@ -30,6 +30,12 @@ class HelloWorldController extends BaseController{
     
     $aa = Avatar::findAll();
     Kint::dump($aa);
+    $ap = Avatar::findByPlayer(2);
+    Kint::dump($ap);
+    
+    
+    $ai = Avatar::findOne(1);
+    Kint::dump($ai);
     
   }
 
@@ -42,13 +48,25 @@ class HelloWorldController extends BaseController{
       View::make('login.html');
     }
     public static function overview(){
-      View::make('overview.html');
+        $avatars = Avatar::findAll();
+        echo $avatars[0]->name;
+      View::make('overview.html', array('avatars' => $avatars));
     }
     
-    public static function myPage(){
-      View::make('mypage.html');
+    public static function adminPage(){
+      View::make('admin.html');
     }
-    public static function character(){
-      View::make('character.html');
+    
+    public static function myPage($id){
+        $player = Player::findById($id);
+       
+        $avatars = Avatar::findByPlayer($id);
+      View::make('mypage.html', array('avatars' => $avatars, 'player' => $player));
+    }
+    
+    
+    public static function character($id){
+        $avatar = Avatar::findOne($id);
+      View::make('character.html', array('avatar' => $avatar));
     }
   }

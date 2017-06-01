@@ -18,9 +18,15 @@
     <tbody>
     
       <tr>
-        <th><button type="button" class="btn btn-disabled">main</button></th>
-        <td><label class="label label-info">wizard</label></td>
-        <th><button type="button" class="btn btn-disabled">wind</button></th>
+        <td>
+              {% if avatar.main %}           
+                <label class="label label-success">Yes</label>
+              {% else %}
+                <label class="label label-danger">No</label>
+              {% endif %}
+        </td>
+        <td><label class="label label-info">{{avatar.c_name}}</label></td> 
+        <td><label class="label label-info">{{avatar.e_type}}</label></td>
         <td><label class="label label-danger">RIP</label></td>
         <td><label class="label label-success">Owned</label></td>
       </tr>
@@ -28,6 +34,6 @@
   </table>
   
    <img src="somewhere.jpg" alt="pitää selvittää miten linkitän kuvan toisesta sivustosta D:"> 
-   <p><a href="mypage">to my page</a></p>
-   <p><a href="overview">to front</a></p>
+   <p><a href="{{base_path}}/mypage/1">to my page</a></p>
+   <p><a href="{{base_path}}/overview">to overview</a></p>
 {% endblock %}

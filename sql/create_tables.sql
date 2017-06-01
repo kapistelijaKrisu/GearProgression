@@ -23,9 +23,9 @@ CREATE TABLE Player(
 
 CREATE TABLE Avatar(
     id SERIAL PRIMARY KEY,
-    p_id INTEGER REFERENCES Player(id),
-    e_id INTEGER REFERENCES Element(id),
-    c_id INTEGER REFERENCES clas(id),
+    p_id INTEGER REFERENCES Player(id) NOT NULL,
+    e_id INTEGER REFERENCES Element(id) NOT NULL,
+    c_id INTEGER REFERENCES clas(id) NOT NULL,
     name character varying(20) NOT NULL UNIQUE,
     main boolean NOT NULL,
     stats cidr 

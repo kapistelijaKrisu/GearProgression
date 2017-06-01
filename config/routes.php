@@ -1,7 +1,7 @@
 <?php
 
   $routes->get('/', function() {
-    HelloWorldController::index();
+      Redirect::to('/overview');
   });
 
   $routes->get('/hiekkalaatikko', function() {
@@ -10,12 +10,19 @@
   $routes->get('/login', function() {
     HelloWorldController::login();
   });
-   $routes->get('/overview', function() {
+  $routes->get('/overview', function() {
     HelloWorldController::overview();
   });
-  $routes->get('/mypage', function() {
-    HelloWorldController::myPage();
+  $routes->get('/admin', function() {
+    HelloWorldController::adminPage();
   });
-  $routes->get('/character', function() {
-    HelloWorldController::character();
+  $routes->get('/mypage/:id', function($id) {
+    HelloWorldController::myPage($id);
+  });
+  $routes->get('/character/:id', function($id) {
+    HelloWorldController::character($id);
+  });
+  
+  $routes->post('/login', function() {
+    Redirect::to('/overview', array('message' => 'Nothing interesting happens..yet.'));
   });
