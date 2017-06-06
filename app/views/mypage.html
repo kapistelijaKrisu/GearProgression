@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 
-  <h1>My Page</h1>
+
+  <h1>{{player.name}}</h1>
+  
   <div class="alert alert-info">
       <a href="{{base_path}}/overview">Home Page</a>
   </div>
@@ -13,54 +15,63 @@
         <th><label class="label label-info">New Name</label></th>
         <th><label class="label label-danger">Rename</label></th>
         <th><label class="label label-success">Delete</label></th>
-        <th><label class="label label-info">View</label></th>
        </tr>
     </thead>
 
     <tbody>
     
+       {% for avatar in avatars %}
       <tr>
-        <td><a> potato</a></td>
-        <td><input type="text" class="form-group-sm" value=""></td>
-        <td><button type="button" class="btn btn-danger">Apply</button></td>
-        <th><button type="button" class="btn btn-success">Delete</button></th>
-        <th><button type="button" class="btn btn-info">View</button></th>
+        <td><a href="{{base_path}}/character/{{avatar.id}}">{{avatar.name}}</td>
+        
+        <form method="post" action="{{base_path}}/player/{{avatar.id}}/rename">           
+        <td><input type="text" class="form-group-sm" value=""></td>      
+        <td><button type="submit" class="btn btn-success">Apply</button></td>
+         </form>
+    
+         <form method="post" action="{{base_path}}/player/{{avatar.id}}/delChar">       
+        <th><button type="submit" class="btn btn-danger">Delete</button></th>
+         </form>
       </tr>
-      <tr>
-        <td><a> 2potato</a></td>
-        <td><input type="text" class="form-group-sm" value=""></td>
-        <td><button type="button" class="btn btn-danger">Apply</button></td>
-        <th><button type="button" class="btn btn-success">Delete</button></th>
-        <th><button type="button" class="btn btn-info">View</button></th>
-      </tr>
+      {% endfor %}
     </tbody>
   </table>
   
-  <form method="post" action="{{base_path}}/mypage">
-      <div class="form-group">
+  <form method="post" action="{{base_path}}/player/{{player.id}}/newChar">
+      <div class="form-group"> 
           <label>Character Name</label>
           <input type="text" name="character" class="form-group"> 
           <select name="priority">
               <option value="main">Main</option>
               <option value="alt">Alt</option>
           </select>
+                        
           <select name="element">
-              <option value="potato">Potato</option>
-              <option value="booom">Booom</option>
+              {% for ele in elements %}
+              <option value="{{ele.type}}">{{ele.type}}</option>
+              {% endfor %}
+          </select>
+          <select name="class">
+              {% for class in classes %}
+              <option value="{{class.name}}">{{class.name}}</option>
+              {% endfor %}
           </select>
           
       </div>
       <div class="form-group">
-          <form>
-              <input type="checkbox" name="stick" value="stick">stick
-              <input type="checkbox" name="mstick" value="mega_stick">mega stick
+          
+              {% for item in items %}
+              <input type="checkbox" name="{{item.name}}" value="{{item.name}}">{{item.name}}
+              {% endfor %}             
       </div>
       <div class="form-group">
-          <button type="submit" class="btn btn-primary">Add new character</button>
+          <button type="submit" class="btn btn-primary">Add</button>
       </div>
-      <br><br><br>
+       </form>
+  
+      <div>
+  <form method="post" action="{{base_path}}/player/{{player.id}}/ditch">
+  <button type="submit" class="btn-lg btn-danger">Leave from raid listing</button>
   </form>
-  
-  <button type="button" class="btn-lg btn-danger">Leave from raid listing</button>
-  
+</div>
 {% endblock %}

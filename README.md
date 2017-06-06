@@ -5,7 +5,7 @@ Yleisiä linkkejä:
 * [Linkki sovellukseeni](http://kbvalto.users.cs.helsinki.fi/GearProgression)
 * [Linkki asetuksiin](http://kbvalto.users.cs.helsinki.fi/GearProgression/admin)
 * [Linkki kirjautumiseen](http://kbvalto.users.cs.helsinki.fi/GearProgression/login)
-* [Linkki pelaajan sivulle](http://kbvalto.users.cs.helsinki.fi/GearProgression/mypage/1)
+* [Linkki pelaajan sivulle](http://kbvalto.users.cs.helsinki.fi/GearProgression/player/1)
 * [Linkki yksittäiselle hahmon sivulle](http://kbvalto.users.cs.helsinki.fi/GearProgression/character/1)
 * [Linkki dokumentaatiooni](https://github.com/kapistelijaKrisu/GearProgression/blob/master/doc/dokumentaatio.pdf)
 

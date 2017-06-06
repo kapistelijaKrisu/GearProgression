@@ -7,7 +7,7 @@
       {{message}}
   </div>
   <div class="alert alert-success">
-      <a href="{{base_path}}/myPage/1">to my page</a>
+      <a href="{{base_path}}/player/1">to my page</a>
   </div>
   <div class="alert alert-danger">
       <a href="{{base_path}}/admin">to Settings</a>
@@ -25,9 +25,9 @@
         
         
         
-        
-        <th><button type="button" class="btn btn-default">Item 1</button></th>
-        <th><button type="button" class="btn btn-default">Item 2</button></th>
+        {% for item in items %}
+        <th><button type="button" class="btn btn-default">{{item.name}}</button></th>
+         {% endfor %}
         <th><button type="button" class="btn btn-disabled">Delete</button></th>
       </tr>
     </thead>
@@ -35,6 +35,7 @@
     <tbody>
         
         {% for avatar in avatars %}
+        {% set idx = loop.index %}
         <tr>
           <td><a href="{{base_path}}/character/{{avatar.id}}">{{avatar.name}}</td>
           <td>
@@ -45,15 +46,38 @@
               {% endif %}
           </td>
         <td><label class="label label-info">{{avatar.e_type}}</label></td>
-        <td><label class="label label-info">{{avatar.c_name}}</label></td>     
-        <td><button type="button" class="btn btn-disabled">RIP</button></td>
-        <td><button type="button" class="btn btn-disabled">Owned</button></td>
+        <td><label class="label label-info">{{avatar.c_name}}</label></td> 
+        
+        {% for status in idx.ownerships %}
+              {% if status.owned %}           
+                <td><label class="label label-success">has</label></td>
+              {% else %}
+                             
+              <td><label class="label label-danger">??{{status.i_id}}{{status.a_id}}{{avatar.id}}</label></td>
+              {% endif %}
+          
+          {% endfor %}
         
         <td><form method="post" action="{{base_path}}/admin/delChar">        
           <button type="submit" name="{{avatar.id}}" class="btn btn-danger">
-              Delete</button></form></td>   
+          Delete</button></form></td>   
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  
+{% for avatar in avatars %}
+   {% set arr_size = avatar.ownerships|length %}
+   {{arr_size}}<-here {{avatar.test}}<-db result
+
+   
+   {% for ownership in avatar.ownerships %}
+                ({{ ownership.a_id }}{{ ownership.i_id }}) 
+   
+
+{% endfor %}
+{% endfor %}
+    
+
+
 {% endblock %}

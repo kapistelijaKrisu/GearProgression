@@ -55,4 +55,4 @@ INSERT INTO Ownership(a_id, i_id, owned) VALUES(
 INSERT INTO Ownership(a_id, i_id, owned) VALUES(
     (SELECT id FROM Avatar WHERE name='hajoon'),
     (SELECT id FROM Item WHERE name='mega stick'),
-    TRUE);
+    FALSE);

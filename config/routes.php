@@ -16,7 +16,7 @@ $routes->get('/overview', function() {
 $routes->get('/admin', function() {
     HelloWorldController::adminPage();
 });
-$routes->get('/mypage/:id', function($id) {
+$routes->get('/player/:id', function($id) {
     HelloWorldController::myPage($id);
 });
 $routes->get('/character/:id', function($id) {
@@ -62,5 +62,21 @@ $routes->post('/admin/delPlayer', function() {
 });
 $routes->post('/admin/delChar', function() {
     Redirect::to('/overview', array('message' => 'Character deleted.'));
+});
+
+
+$routes->post('/player/:id/newChar/', function() {
+    Redirect::to('/overview', array('message' => 'nothing happen.'));
+});
+
+$routes->post('/player/:id/delChar', function() {
+    Redirect::to('/overview', array('message' => 'nothing happen.'));
+});
+$routes->post('/player/:id/ditch', function() {
+    Redirect::to('/overview', array('message' => 'nothing happen.'));
+});
+
+$routes->post('/player/:id/rename', function() {
+    Redirect::to('/overview', array('message' => 'nothing happen.'));
 });
 
