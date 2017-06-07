@@ -35,7 +35,7 @@
     <tbody>
         
         {% for avatar in avatars %}
-        {% set idx = loop.index %}
+       
         <tr>
           <td><a href="{{base_path}}/character/{{avatar.id}}">{{avatar.name}}</td>
           <td>
@@ -48,13 +48,16 @@
         <td><label class="label label-info">{{avatar.e_type}}</label></td>
         <td><label class="label label-info">{{avatar.c_name}}</label></td> 
         
-        {% for status in idx.ownerships %}
-              {% if status.owned %}           
+        {% for status in avatar %}
+         {% set status_att = status.owned  %}
+                     
+                {% if status.owned %}           
                 <td><label class="label label-success">has</label></td>
               {% else %}
                              
               <td><label class="label label-danger">??{{status.i_id}}{{status.a_id}}{{avatar.id}}</label></td>
               {% endif %}
+              
           
           {% endfor %}
         
@@ -66,16 +69,44 @@
     </tbody>
   </table>
   
+  on tää buginen twigi ...työmaa alla
+  
 {% for avatar in avatars %}
-   {% set arr_size = avatar.ownerships|length %}
-   {{arr_size}}<-here {{avatar.test}}<-db result
-
-   
-   {% for ownership in avatar.ownerships %}
-                ({{ ownership.a_id }}{{ ownership.i_id }}) 
-   
-
+<div>
+  
+   {% for ownership in items %}                                        
+      <li class="label label-danger">??{{ownership.name}}</li>
 {% endfor %}
+</div>
+{% endfor %}
+
+
+
+
+{% for avatar in avatars %}
+<div>
+   {% for key, ownership in avatar.ownerships %}a
+     <li class="label label-danger">{{ownership.owned}}</li>
+   {% endfor %}
+</div>
+{% endfor %}
+
+
+
+{% for avatar in avatars %}
+<div>
+
+   {% for item in items %}
+    <!-- <li class="label label-danger">{{avatar.ownerships[item.id].owned}}</li>-->
+     
+     {% if avatar.ownerships[item.id].owned %}           
+                <td><label class="label label-success">has</label></td>
+              {% else %}
+                             
+              <td><label class="label label-danger">??{{status.i_id}}{{status.a_id}}{{avatar.id}}</label></td>
+              {% endif %}
+   {% endfor %}
+</div>
 {% endfor %}
     
 
