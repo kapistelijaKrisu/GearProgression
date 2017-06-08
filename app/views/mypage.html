@@ -4,6 +4,16 @@
 
   <h1>{{player.name}}</h1>
   
+   {% if messages %}
+  <div class="alert alert-info">
+      <ul>
+          {% for msg in messages %}
+          <li>{{msg}}</li>
+          {% endfor %}
+      </ul>
+  </div>
+  {% endif %}
+  
   <div class="alert alert-info">
       <a href="{{base_path}}/overview">Home Page</a>
   </div>
@@ -69,9 +79,17 @@
       </div>
        </form>
   
-      <div>
-  <form method="post" action="{{base_path}}/player/{{player.id}}/ditch">
+      
+  
+  <div>
+  <form method="post" action="{{base_path}}/player/{{player.id}}/rename">
+      <input type="text" name="player_name" class="form-group"> 
+  <button type="submit" class="btn-lg btn-info">rename!</button>
+  </form>
+  </div><br>
+     <div>     
+          <form method="post" action="{{base_path}}/player/{{player.id}}/ditch">
   <button type="submit" class="btn-lg btn-danger">Leave from raid listing</button>
   </form>
-</div>
+      </div>
 {% endblock %}

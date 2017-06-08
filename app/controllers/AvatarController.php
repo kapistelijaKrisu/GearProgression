@@ -8,19 +8,24 @@ class AvatarController {
         if($params['priority'] == 'main') {
             $isMain = true;
         }
-        echo Clas::findByName($params['class'])->id;
-        
-        $avatar = new Avatar(array(
+        $attributes = array(
             'name' => $params['character'],
             'p_id' => Player::findByName($params['player'])->id,
             'e_id' => Element::findByType($params['element'])->id,
             'c_id' => Clas::findByName($params['class'])->id,
             'main' => $isMain,
             'stats' => null              
-            ));
+            );
+        $avatar = new Avatar($attributes);
+        $errors = $avatar->errors();
         
-        Kint::dump($params);
-        $avatar->save();
+        if (count($errors) == 0) {
+            $avatar->save();
+
+            Redirect::to('/admin', array('message' => 'Character added.'));
+        } else {
+            Redirect::to('/admin', array('avatar_errors' => $errors, 'avatar_attributes' => $attributes));
+        }
     }
     
     /*CREATE TABLE Avatar(

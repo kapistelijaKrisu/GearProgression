@@ -2,15 +2,27 @@
 {% block content %}
 
   <h1>Admin Page</h1>
-  
+  {% if message %}
   <div class="alert alert-info">
       {{message}}
   </div>
+  {% endif %}
+  
+   {% if playerErrors %}
+  <div class="alert alert-danger">
+      <ul>
+          {% for error in playerErrors %}
+          <li>{{error}}</li>
+          {% endfor %}
+      </ul>
+  </div>
+  {% endif %}
+  
   <div class="alert alert-info">
       <a href="{{base_path}}/overview">Overview</a>
   </div>
   <div class="alert alert-success">
-      <a href="{{base_path}}/mypage/1">to my page</a>
+      <a href="{{base_path}}/player/1">to my page</a>
   </div>
   
   <h2>Elements</h2> 
@@ -109,7 +121,7 @@
   <form method="post" action="{{base_path}}/admin/newPlayer">
       <div>
           <label>Player Nickname</label>
-          <input type="text" name="player" class="form-inline">  
+          <input type="text" name="player_name" class="form-inline">  
           <button type="submit" class="btn btn-primary">Add</button>
       </div>
   </form>
@@ -137,8 +149,6 @@
   </table>
   
   <h2>Characters</h2>
-  <p>Just delete the player )o)</p>
-  <p>lazy way to add character</p>
   
   <form method="post" action="{{base_path}}/admin/newChar">
       <div class="form-group">
@@ -162,17 +172,29 @@
               {% endfor %}
           </select>
           
-      </div>
+          <br>
       <div class="form-group">
           
               {% for item in items %}
               <input type="checkbox" name="{{item.name}}" value="{{item.name}}">{{item.name}}
               {% endfor %}             
       </div>
+      </div>
       <div class="form-group">
           <button type="submit" class="btn btn-primary">Add</button>
-      </div>
-  </form>
+      </div></form>
+      <br><br>
+      <div><form>
+              <form method="post" action="{{base_path}}/admin/delChar">
+                  <select name="avatar">
+              {% for avatar in avatars %}
+              <option value="{{avatar.name}}">{{avatar.name}}</option>
+              {% endfor %}
+                  </select>
+              <button type="submit" class="btn btn-danger">Delete</button>
+          </select>
+          
+          </form></div>
   
   
   

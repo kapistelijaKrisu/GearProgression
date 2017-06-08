@@ -4,6 +4,17 @@ class HelloWorldController extends BaseController {
 
     // ...
     public static function sandbox() {
+        $pppp = new Player(array('id' => 33,
+                'name' => 'a',
+                'password' =>'asss',
+                'admin' => false,
+            ));
+        $errors = $pppp->errors();
+        Kint::dump($pppp);
+        
+        Kint::dump($errors);
+        
+        /*
         $findEle = Element::findByType('potato');
         $allEle = Element::all();
         Kint::dump($findEle);
@@ -36,15 +47,7 @@ class HelloWorldController extends BaseController {
 
 
         $ai = Avatar::findOne(1);
-        Kint::dump($ai);
-    }
-
-    public static function index() {
-        View::make('home.html');
-    }
-
-    public static function login() {
-        View::make('login.html');
+        Kint::dump($ai);*/
     }
 
     public static function overview() {
@@ -53,12 +56,18 @@ class HelloWorldController extends BaseController {
         View::make('overview.html', array('avatars' => $avatars, 'items' => $items));
     }
 
-    public static function adminPage() {
+    public static function adminPage($error_map) {
         $everything = array(
             'classes' => Clas::all(),
             'elements' => Element::all(),
             'items' => Item::findAll(),
-            'players' => Player::findAll());
+            'players' => Player::findAll(),
+            'avatars' => Avatar::findAll());
+        
+        if(count($error_map != 0)) {
+            $everything = array_merge($everything, $error_map);
+        }
+        
         View::make('admin.html', $everything);
     }
 

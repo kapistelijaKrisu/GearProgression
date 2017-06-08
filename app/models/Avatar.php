@@ -4,8 +4,16 @@ class Avatar extends BaseModel {
 
     public $id, $p_id, $p_name, $e_id, $e_type, $c_id, $c_name, $name, $main, $stats, $ownerships;
 
-    public function _construct($attributes) {
+    public function __construct($attributes) {
         parent::__construct($attributes);
+        $this->validators = array('validate_name' => array('min' => 3, 'max' => 20));
+        $this->validators = array('validate_not_null' => array(
+                'name' => $this->name,
+                'player' => $this->p_id,
+                'element' => $this->e_id,
+                'class' => $this->c_id,
+                'main' => $this->main             
+        ));
     }
 
     public static function findAll() {
@@ -36,9 +44,9 @@ class Avatar extends BaseModel {
 
 
                 $ownerships[] = array($row['i_id'] => new Ownership(array(
-                    'a_id' => $row['a_id'],
-                    'i_id' => $row['i_id'],
-                    'owned' => $row['owned']
+                        'a_id' => $row['a_id'],
+                        'i_id' => $row['i_id'],
+                        'owned' => $row['owned']
                 )));
 
                 $currentAvatar = new Avatar(array(
@@ -61,8 +69,6 @@ class Avatar extends BaseModel {
                     'i_id' => $row['i_id'],
                     'owned' => $row['owned']
                 ));
-        
-     
             }
         }
         return $avatars;
@@ -99,9 +105,9 @@ class Avatar extends BaseModel {
 
 
                 $ownerships[] = array($row['i_id'] => new Ownership(array(
-                    'a_id' => $row['a_id'],
-                    'i_id' => $row['i_id'],
-                    'owned' => $row['owned']
+                        'a_id' => $row['a_id'],
+                        'i_id' => $row['i_id'],
+                        'owned' => $row['owned']
                 )));
 
                 $currentAvatar = new Avatar(array(
@@ -158,9 +164,9 @@ class Avatar extends BaseModel {
 
 
                 $ownerships[] = array($row['i_id'] => new Ownership(array(
-                    'a_id' => $row['id'],
-                    'i_id' => $row['i_id'],
-                    'owned' => $row['owned']
+                        'a_id' => $row['id'],
+                        'i_id' => $row['i_id'],
+                        'owned' => $row['owned']
                 )));
 
                 $currentAvatar = new Avatar(array(
@@ -177,12 +183,11 @@ class Avatar extends BaseModel {
                     'ownerships' => $ownerships
                 ));
             } else {
-              $currentAvatar->ownerships[$row['i_id']] = new Ownership(array(
+                $currentAvatar->ownerships[$row['i_id']] = new Ownership(array(
                     'id' => $row['id'],
                     'i_id' => $row['i_id'],
                     'owned' => $row['owned']
                 ));
-                
             }
         }
 

@@ -8,13 +8,16 @@ $routes->get('/hiekkalaatikko', function() {
     HelloWorldController::sandbox();
 });
 $routes->get('/login', function() {
-    HelloWorldController::login();
+    PlayerController::login();
+});
+$routes->get('/logout', function() {
+    PlayerController::logout();
 });
 $routes->get('/overview', function() {
     HelloWorldController::overview();
 });
 $routes->get('/admin', function() {
-    HelloWorldController::adminPage();
+    HelloWorldController::adminPage(array());
 });
 $routes->get('/player/:id', function($id) {
     HelloWorldController::myPage($id);
@@ -24,7 +27,7 @@ $routes->get('/character/:id', function($id) {
 });
 
 $routes->post('/login', function() {
-    Redirect::to('/overview', array('message' => 'Nothing interesting happens..yet.'));
+    PlayerController::handle_login();
 });
 $routes->post('/admin/newEle', function() {
     ElementController::store();
@@ -40,11 +43,14 @@ $routes->post('/admin/newItem', function() {
 });
 $routes->post('/admin/newPlayer', function() {
     PlayerController::store();
-    Redirect::to('/admin', array('message' => 'Player added.'));
+    
 });
 $routes->post('/admin/newChar', function() {
     AvatarController::store();
-    Redirect::to('/admin', array('message' => 'Character added.'));
+    
+});
+$routes->post('/admin/delChar', function() {
+    Redirect::to('/admin', array('message' => 'Character deleted.'));
 });
 
 
@@ -61,6 +67,7 @@ $routes->post('/admin/delPlayer', function() {
     Redirect::to('/admin', array('message' => 'Player deleted.'));
 });
 $routes->post('/admin/delChar', function() {
+    AvatarController::kill();
     Redirect::to('/overview', array('message' => 'Character deleted.'));
 });
 
@@ -70,13 +77,13 @@ $routes->post('/player/:id/newChar/', function() {
 });
 
 $routes->post('/player/:id/delChar', function() {
-    Redirect::to('/overview', array('message' => 'nothing happen.'));
+    PlayerController::deleteSelf();
 });
 $routes->post('/player/:id/ditch', function() {
-    Redirect::to('/overview', array('message' => 'nothing happen.'));
+    PlayerController::delete();
 });
 
 $routes->post('/player/:id/rename', function() {
-    Redirect::to('/overview', array('message' => 'nothing happen.'));
+    PlayerController::rename();
 });
 
