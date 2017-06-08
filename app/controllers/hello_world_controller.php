@@ -53,7 +53,8 @@ class HelloWorldController extends BaseController {
     public static function overview() {
         $avatars = Avatar::findAll();
         $items = Item::findAll();
-        View::make('overview.html', array('avatars' => $avatars, 'items' => $items));
+        $player = BaseController::get_user_logged_in();
+        View::make('overview.html', array('avatars' => $avatars, 'items' => $items, 'player' => $player));
     }
 
     public static function adminPage($error_map) {

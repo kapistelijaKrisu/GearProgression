@@ -20,7 +20,8 @@ class PlayerController extends BaseController {
     public static function handle_logout() {
 
         $_SESSION['player'] = null;
-
+       Redirect::to('/overview', array('message' => 'logout successful'));
+     
     }
 
     
@@ -49,7 +50,7 @@ class PlayerController extends BaseController {
         $player = Player::findById(1);
 
         if ($player == null) {
-            Redirect::to('/overview', array('message' => 'De fuc?'));
+            Redirect::to('/overview', array('message' => 'De fuc?', 'player' => $player));
         } else {
 
             $player->name = $params['player_name'];
@@ -72,13 +73,12 @@ class PlayerController extends BaseController {
         $player = Player::findById(1);
 
         if ($player == null) {
-            Redirect::to('/overview', array('message' => 'De fuc?'));
+            Redirect::to('/overview', array('message' => 'De fuc?', 'player' => $player));
         } else {
 
-            $player->name = $params['player_name'];
-            $errors = $player->errors();
+            //sqldelete
 
-    
+            PlayerController::handle_logout();
             Redirect::to('/overview', array('message' => 'ciao!'));
         } 
     }

@@ -10,8 +10,8 @@ $routes->get('/hiekkalaatikko', function() {
 $routes->get('/login', function() {
     PlayerController::login();
 });
-$routes->get('/logout', function() {
-    PlayerController::logout();
+$routes->post('/logout', function() {
+    PlayerController::handle_logout();
 });
 $routes->get('/overview', function() {
     HelloWorldController::overview();
