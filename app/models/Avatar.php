@@ -43,11 +43,12 @@ class Avatar extends BaseModel {
                 $counter = $row['a_id'];
 
 
-                $ownerships[] = array($row['i_id'] => new Ownership(array(
+                $ownership = array();
+                $ownerships[$row['i_id']] = new Ownership(array(
                         'a_id' => $row['a_id'],
                         'i_id' => $row['i_id'],
                         'owned' => $row['owned']
-                )));
+                ));
 
                 $currentAvatar = new Avatar(array(
                     'id' => $row['a_id'],
@@ -103,12 +104,12 @@ class Avatar extends BaseModel {
             if ($counter != $row['a_id']) {
                 $counter = $row['a_id'];
 
-
-                $ownerships[] = array($row['i_id'] => new Ownership(array(
+                $ownership = array();
+                $ownerships[$row['i_id']] = new Ownership(array(
                         'a_id' => $row['a_id'],
                         'i_id' => $row['i_id'],
                         'owned' => $row['owned']
-                )));
+                ));
 
                 $currentAvatar = new Avatar(array(
                     'id' => $row['a_id'],
@@ -161,13 +162,13 @@ class Avatar extends BaseModel {
         $currentAvatar = null;
         foreach ($rows as $row) {
             if ($currentAvatar == null) {
-
-
-                $ownerships[] = array($row['i_id'] => new Ownership(array(
+                
+                $ownership = array();
+                $ownerships[$row['i_id']] = new Ownership(array(
                         'a_id' => $row['id'],
                         'i_id' => $row['i_id'],
                         'owned' => $row['owned']
-                )));
+                ));
 
                 $currentAvatar = new Avatar(array(
                     'id' => $row['id'],
@@ -212,6 +213,11 @@ class Avatar extends BaseModel {
         Kint::trace();
         Kint::dump($row);
         $this->id = $row['id'];
+    }
+    
+    public function delete() {
+        $query = DB::connection()->prepare('DELETE FROM Avatar WHERE id = :id;');
+        $query->execute(array('id' => $this->id));
     }
 
 }

@@ -2,16 +2,18 @@
 
 class Player extends BaseModel {
 
-    public $id, $name, $password, $admin, $validatorss;
+    public $id, $name, $password, $admin;
 
     public function __construct($attributes) {
         parent::__construct($attributes);
 
         $this->validators = array(
-            'validate_name' => array('min' => 3, 'max' => 20),
-            'validate_not_null' => array('name' => $this->name, 'password' => $this->password, 'admin' => $this->admin));
+            'validate_string_length' => array('min' => 3, 'max' => 20, 'attribute' => 'name'),
+            'name_is_unique',
+            'validate_string_length' => array('min' => 3, 'max' => 20, 'attribute' => 'password'),
+            'validate_not_null' => array('admin'));
     }
-    
+
     public static function authenticate($user, $password) {
         $query = DB::connection()->prepare('SELECT * FROM Player WHERE name = :name AND password = :password LIMIT 1');
         $query->execute(array('name' => $user, 'password' => $password));
@@ -26,6 +28,16 @@ class Player extends BaseModel {
             return $player;
         }
         return null;
+    }
+    
+    public function name_is_unique() {
+        $errors = array();
+        if ($this->name != null) {
+            if (Item::findByName($this->name) != null) {
+                $errors[] = 'Player name already exists!';
+            }
+        }
+        return $errors;
     }
 
     public static function findAll() {
@@ -88,25 +100,29 @@ class Player extends BaseModel {
             'boolean' => $this->admin));
 
         $row = $query->fetch();
-        Kint::trace();
-        Kint::dump($row);
         $this->id = $row['id'];
     }
 
-    public function change($saveWhat) {
-        if (property_exists($this, $saveWhat) == false) {
-            return false;
-        }
-
+    public function rename() {
         $query = DB::connection()->prepare('UPDATE Player SET name = :toWhat WHERE id = :id;');
         $query->execute(array(
-    
-        //   'att' => $saveWhat,
-            'toWhat' => $this->{$saveWhat},
-                    'id' => $this->id
-            ));
-   
-        return true;
+            'toWhat' => $this->name,
+            'id' => $this->id
+        ));
+    }
+
+    public function passwordChange() {
+        $query = DB::connection()->prepare('UPDATE Player SET password = :toWhat WHERE id = :id;');
+        $query->execute(array(
+            'toWhat' => $this->password,
+            'id' => $this->id
+        ));
+    }
+
+    public function delete($id) {
+        $query = DB::connection()->prepare('DELETE FROM Player WHERE id = :id;');
+        $query->execute(array('id' => $id
+        ));
     }
 
 }

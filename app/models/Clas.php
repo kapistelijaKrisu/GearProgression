@@ -5,6 +5,21 @@ public $id, $name;
 
     public function __construct($attributes) {
         parent::__construct($attributes);
+    
+        $this->validators = array(
+            'validate_string_length' => array('min' => 2, 'max' => 20, 'attribute' => 'name'),
+            'name_is_unique'
+        );
+    }
+
+    public function name_is_unique() {
+        $errors = array();
+        if ($this->name != null) {
+            if (Clas::findByName($this->name) != null) {
+                $errors[] = 'Player name already exists!';
+            }
+        }
+        return $errors;
     }
 
     public static function findById($id) {
@@ -62,6 +77,11 @@ public $id, $name;
         Kint::trace();
         Kint::dump($row);
         $this->id = $row['id'];
+    }
+    
+    public function delete() {
+        $query = DB::connection()->prepare('DELETE FROM Clas WHERE id = :id;');
+        $query->execute(array('id' => $this->id));
     }
 
 }

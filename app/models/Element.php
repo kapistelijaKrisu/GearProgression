@@ -6,6 +6,20 @@ class Element extends BaseModel {
 
     public function __construct($attributes) {
         parent::__construct($attributes);
+        
+        $this->validators = array(
+            'validate_string_length' => array('min' => 2, 'max' => 20, 'attribute' => 'type'),
+            'type_is_unique');
+    }
+    
+    public function type_is_unique() {
+        $errors = array();
+        if ($this->type != null) {
+            if (Element::findByType($this->type) != null) {
+                $errors[] = 'Player name already exists!';
+            }
+        }
+        return $errors;
     }
 
     public static function findById($id) {
@@ -67,8 +81,11 @@ class Element extends BaseModel {
         $query = DB::connection()->prepare('INSERT INTO Element (type) VALUES (:type) RETURNING id');
         $query->execute(array('type' => $this->type));
         $row = $query->fetch();
-        Kint::trace();
-        Kint::dump($row);
         $this->id = $row['id'];
+    }
+
+    public function delete() {
+        $query = DB::connection()->prepare('DELETE FROM Element WHERE id = :id;');
+        $query->execute(array('id' => $this->id));
     }
 }

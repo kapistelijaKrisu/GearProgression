@@ -19,29 +19,35 @@ class BaseModel {
 
         $errors = array();
         foreach ($this->validators as $validator => $value) {
+            if ($value == null) {
+                $arr = $this->{$validator}();
+            } else {
             $arr = $this->{$validator}($value);
+            }
             $errors = array_merge($errors, $arr);
         }
         return $errors;
     }
 
-    public function validate_name($param_arr) {
+    public function validate_string_length($param_arr) {
         $errors = array();
-        if ($this->name == null || strlen($this->name) < $param_arr['min'] || strlen($this->name) > $param_arr['max']) {
-            $errors[] = 'Name has to be ' . $param_arr['min'] . '-' . $param_arr['max'] . ' characters long!';
+        $trimmed = preg_replace('/\s+/', '', $this->{$param_arr['attribute']});
+        if ($trimmed == null ||
+                strlen($trimmed) < $param_arr['min'] ||
+                strlen($trimmed) > $param_arr['max']) {
+            $errors[] = 'Name has to be ' . $param_arr['min'] . '-' . $param_arr['max'] . ' characters long and spaces do not count!';
         }
         return $errors;
     }
 
     public function validate_not_null($param_arr) {
         $errors = array();
-        foreach ($param_arr as $att => $val) {
+        foreach ($param_arr as $att) {
 
-            if ($val == null) {
+            if ($this->{$att} == null) {
                 $errors[] = 'This cannot be empty: ' . $att . ' !';
             }
             return $errors;
         }
     }
-
 }

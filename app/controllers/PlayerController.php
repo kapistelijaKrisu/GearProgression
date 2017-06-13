@@ -47,16 +47,16 @@ class PlayerController extends BaseController {
 
     public static function rename() {
         $params = $_POST;
-        $player = Player::findById(1);
+        $player = Player::findById(BaseController::get_user_logged_in());
 
         if ($player == null) {
             Redirect::to('/overview', array('message' => 'De fuc?', 'player' => $player));
         } else {
-
+            Kint::dump($params);
             $player->name = $params['player_name'];
             $errors = $player->errors();
             if (count($errors) == 0) {
-                if ($player->change('name')) {
+                if ($player->rename('name')) {
 
                     Redirect::to('/player/' . $player->id, array('messages' => array('Rename succesful!')));
                 } else {

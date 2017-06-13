@@ -5,7 +5,7 @@ $routes->get('/', function() {
 });
 
 $routes->get('/hiekkalaatikko', function() {
-    HelloWorldController::sandbox();
+    PageController::sandbox();
 });
 $routes->get('/login', function() {
     PlayerController::login();
@@ -14,16 +14,22 @@ $routes->post('/logout', function() {
     PlayerController::handle_logout();
 });
 $routes->get('/overview', function() {
-    HelloWorldController::overview();
+    PageController::overview();
 });
 $routes->get('/admin', function() {
-    HelloWorldController::adminPage(array());
+    $player = BaseController::get_user_logged_in();
+    if ($player != null && $player->admin) {
+        PageController::adminPage(array());
+        
+    }else {
+    Redirect::to('/overview', array('message' => 'sneaky'));
+    }
 });
 $routes->get('/player/:id', function($id) {
-    HelloWorldController::myPage($id);
+    PageController::myPage($id);
 });
 $routes->get('/character/:id', function($id) {
-    HelloWorldController::character($id);
+    PageController::characterPage($id);
 });
 
 $routes->post('/login', function() {

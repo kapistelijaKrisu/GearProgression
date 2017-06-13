@@ -2,94 +2,90 @@
 {% block content %}
 
 
-  <h1>{{player.name}}</h1>
-  
-   {% if messages %}
-  <div class="alert alert-info">
-      <ul>
-          {% for msg in messages %}
-          <li>{{msg}}</li>
-          {% endfor %}
-      </ul>
-  </div>
-  {% endif %}
-  
-  <div class="alert alert-info">
-      <a href="{{base_path}}/overview">Home Page</a>
-  </div>
- 
-   <table class="table table-striped table-bordered">
+<h1>{{player.name}}</h1>
+
+{% if messages %}
+<div class="alert alert-info">
+    <ul>
+        {% for msg in messages %}
+        <li>{{msg}}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div class="alert alert-info">
+    <a href="{{base_path}}/overview">Home Page</a>
+</div>
+
+<table class="table table-striped table-bordered">
     <thead>
-      <tr>
-        <th><label class="label label-info">Character</label></th>
-        <th><label class="label label-info">New Name</label></th>
-        <th><label class="label label-danger">Rename</label></th>
-        <th><label class="label label-success">Delete</label></th>
-       </tr>
+        <tr>
+            <th><label class="label label-info">Character</label></th>
+            <th><label class="label label-info">New Name</label></th>
+            <th><label class="label label-danger">Rename</label></th>
+        </tr>
     </thead>
 
     <tbody>
-    
-       {% for avatar in avatars %}
-      <tr>
-        <td><a href="{{base_path}}/character/{{avatar.id}}">{{avatar.name}}</td>
-        
-        <form method="post" action="{{base_path}}/player/{{avatar.id}}/rename">           
+
+        {% for avatar in avatars %}
+        <tr>
+            <td><a href="{{base_path}}/character/{{avatar.id}}">{{avatar.name}}</td>
+
+    <form method="post" action="{{base_path}}/player/{{avatar.id}}/rename">           
         <td><input type="text" class="form-group-sm" value=""></td>      
         <td><button type="submit" class="btn btn-success">Apply</button></td>
-         </form>
-    
-         <form method="post" action="{{base_path}}/player/{{avatar.id}}/delChar">       
-        <th><button type="submit" class="btn btn-danger">Delete</button></th>
-         </form>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  
-  <form method="post" action="{{base_path}}/player/{{player.id}}/newChar">
-      <div class="form-group"> 
-          <label>Character Name</label>
-          <input type="text" name="character" class="form-group"> 
-          <select name="priority">
-              <option value="main">Main</option>
-              <option value="alt">Alt</option>
-          </select>
-                        
-          <select name="element">
-              {% for ele in elements %}
-              <option value="{{ele.type}}">{{ele.type}}</option>
-              {% endfor %}
-          </select>
-          <select name="class">
-              {% for class in classes %}
-              <option value="{{class.name}}">{{class.name}}</option>
-              {% endfor %}
-          </select>
-          
-      </div>
-      <div class="form-group">
-          
-              {% for item in items %}
-              <input type="checkbox" name="{{item.name}}" value="{{item.name}}">{{item.name}}
-              {% endfor %}             
-      </div>
-      <div class="form-group">
-          <button type="submit" class="btn btn-primary">Add</button>
-      </div>
-       </form>
-  
-      
-  
-  <div>
-  <form method="post" action="{{base_path}}/player/{{player.id}}/rename">
-      <input type="text" name="player_name" class="form-group"> 
-  <button type="submit" class="btn-lg btn-info">rename!</button>
-  </form>
-  </div><br>
-     <div>     
-          <form method="post" action="{{base_path}}/player/{{player.id}}/ditch">
-  <button type="submit" class="btn-lg btn-danger">Leave from raid listing</button>
-  </form>
-      </div>
+    </form>
+
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+<form method="post" action="{{base_path}}/player/{{player.id}}/newChar">
+    <div class="form-group"> 
+        <label>Character Name</label>
+        <input type="text" name="character" class="form-group"> 
+        <select name="priority">
+            <option value="main">Main</option>
+            <option value="alt">Alt</option>
+        </select>
+
+        <select name="element">
+            {% for ele in elements %}
+            <option value="{{ele.type}}">{{ele.type}}</option>
+            {% endfor %}
+        </select>
+        <select name="class">
+            {% for class in classes %}
+            <option value="{{class.name}}">{{class.name}}</option>
+            {% endfor %}
+        </select>
+
+    </div>
+    <div class="form-group">
+
+        {% for item in items %}
+        <input type="checkbox" name="{{item.name}}" value="{{item.name}}">{{item.name}}
+        {% endfor %}             
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Add</button>
+    </div>
+</form>
+
+
+
+<div>
+    <form method="post" action="{{base_path}}/player/{{player.id}}/rename">
+        <input type="text" name="player_name" class="form-group"> 
+        <button type="submit" class="btn-lg btn-info">rename!</button>
+    </form>
+</div><br>
+<div>     
+    <form method="post" action="{{base_path}}/player/{{player.id}}/ditch">
+        <button type="submit" class="btn-lg btn-danger">Leave from raid listing</button>
+    </form>
+</div>
 {% endblock %}

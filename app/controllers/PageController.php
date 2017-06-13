@@ -1,53 +1,10 @@
 <?php
 
-class HelloWorldController extends BaseController {
+class PageController extends BaseController {
 
-    // ...
+ 
     public static function sandbox() {
-        $pppp = new Player(array('id' => 33,
-                'name' => 'a',
-                'password' =>'asss',
-                'admin' => false,
-            ));
-        $errors = $pppp->errors();
-        Kint::dump($pppp);
-        
-        Kint::dump($errors);
-        
-        /*
-        $findEle = Element::findByType('potato');
-        $allEle = Element::all();
-        Kint::dump($findEle);
-        Kint::dump($allEle);
-
-        $findCla = Clas::findByName('wallet');
-        $allCla = Clas::all();
-        Kint::dump($findCla);
-        Kint::dump($allCla);
-
-        $allPla = Player::findAll();
-        $fPla = Player::findById(1);
-        Kint::dump($allPla);
-        Kint::dump($fPla);
-
-        $aItem = Item::findAll();
-        $fItem = Item::findById(1);
-        Kint::dump($aItem);
-        Kint::dump($fItem);
-
-        $aship = Ownership::findAvatarOwnerships(1);
-        $iship = Ownership::findOwnershipsByItemId(1);
-        Kint::dump($aship);
-        Kint::dump($iship);
-
-        $aa = Avatar::findAll();
-        Kint::dump($aa);
-        $ap = Avatar::findByPlayer(2);
-        Kint::dump($ap);
-
-
-        $ai = Avatar::findOne(1);
-        Kint::dump($ai);*/
+       
     }
 
     public static function overview() {
@@ -82,7 +39,7 @@ class HelloWorldController extends BaseController {
             'classes' => $classes, 'elements' => $elements, 'player' => $player));
   }
 
-    public static function character($id) {
+    public static function characterPage($id) {
         $avatar = Avatar::findOne($id);
         $items = Item::findAll();
         View::make('character.html', array('avatar' => $avatar, 'items' => $items));

@@ -1,121 +1,81 @@
 {% extends "base.html" %}
 {% block content %}
 
-  <h1>Status</h1>
-  {% if message %}
-  <div class="alert alert-info">
-      {{message}}
-  </div>
-  {% endif %}
-   {% if player %}
-  
-  <div class="alert alert-success">
-      <a href="{{base_path}}/player/{{player.id}}">to my page</a>
-      <form method="post" action="{{base_path}}/logout">
-    <button type="submit" class="btn btn-success">Log Out</button>
-  </form>
-  </div>
-   {% if player.admin %}
-  <div class="alert alert-danger">
-      <a href="{{base_path}}/admin">to Settings</a>
-  </div>
-  {% endif %}
-  
-  {% else %}
-  
-  <a href="{{base_path}}/login">login</a>
-  {% endif %}
-  
- 
-   <table class="table table-striped table-bordered">
+<h1>Status</h1>
+user:booom pass:321
+{% if message %}
+<div class="alert alert-info">
+    {{message}}
+</div>
+{% endif %}
+{% if player %}
+
+<div class="alert alert-success">
+    <a href="{{base_path}}/player/{{player.id}}">to my page</a>
+    <form method="post" action="{{base_path}}/logout">
+        <button type="submit" class="btn btn-success">Log Out</button>
+    </form>
+</div>
+{% if player.admin %}
+<div class="alert alert-danger">
+    <a href="{{base_path}}/admin">to Settings</a>
+</div>
+{% endif %}
+
+{% else %}
+
+<a href="{{base_path}}/login">login</a>
+{% endif %}
+
+
+<table class="table table-striped table-bordered">
     <thead>
-      <tr>
-        <th><button type="button" class="btn btn-danger">Character</button></th>
-        <th><button type="button" class="btn btn-info">Main</button></th>       
-        <th><button type="button" class="btn btn-success">Element</button></th>
-        <th><button type="button" class="btn btn-info">Class</button></th>
-        
-        
-        
-        {% for item in items %}
-        <th><button type="button" class="btn btn-default">{{item.name}}</button></th>
-         {% endfor %}
-      </tr>
+        <tr>
+            <th><button type="button" class="btn btn-danger">Character</button></th>
+            <th><button type="button" class="btn btn-info">Main</button></th>       
+            <th><button type="button" class="btn btn-success">Element</button></th>
+            <th><button type="button" class="btn btn-info">Class</button></th>
+
+
+
+            {% for item in items %}
+            <th><button type="button" class="btn btn-default">{{item.name}}</button></th>
+            {% endfor %}
+        </tr>
     </thead>
 
     <tbody>
-        
+
         {% for avatar in avatars %}
-       
+
         <tr>
-          <td><a href="{{base_path}}/character/{{avatar.id}}">{{avatar.name}}</td>
-          <td>
-              {% if avatar.main %}           
+            <td><a href="{{base_path}}/character/{{avatar.id}}">{{avatar.name}}</td>
+            <td>
+                {% if avatar.main %}           
                 <label class="label label-success">Yes</label>
-              {% else %}
+                {% else %}
                 <label class="label label-danger">No</label>
-              {% endif %}
-          </td>
-        <td><label class="label label-info">{{avatar.e_type}}</label></td>
-        <td><label class="label label-info">{{avatar.c_name}}</label></td> 
-        
-        {% for status in avatar %}
-         {% set status_att = status.owned  %}
-                     
-                {% if status.owned %}           
-                <td><label class="label label-success">has</label></td>
-              {% else %}
-                             
-              <td><label class="label label-danger">??{{status.i_id}}{{status.a_id}}{{avatar.id}}</label></td>
-              {% endif %}
-              
-          
-          {% endfor %} 
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  
-  on tää buginen twigi ...työmaa alla
-  
-{% for avatar in avatars %}
-<div>
-  
-   {% for ownership in items %}                                        
-      <li class="label label-danger">??{{ownership.name}}</li>
-{% endfor %}
-</div>
-{% endfor %}
+                {% endif %}
+            </td>
+            <td><label class="label label-info">{{avatar.e_type}}</label></td>
+            <td><label class="label label-info">{{avatar.c_name}}</label></td> 
 
-
-
-
-{% for avatar in avatars %}
-<div>
-   {% for key, ownership in avatar.ownerships %}a
-     <li class="label label-danger">{{ownership.owned}}</li>
-   {% endfor %}
-</div>
-{% endfor %}
-
-
-
-{% for avatar in avatars %}
-<div>
-
-   {% for item in items %}
-    <!-- <li class="label label-danger">{{avatar.ownerships[item.id].owned}}</li>-->
      
-     {% if avatar.ownerships[item.id].owned %}           
-                <td><label class="label label-success">has</label></td>
-              {% else %}
-                             
-              <td><label class="label label-danger">??{{status.i_id}}{{status.a_id}}{{avatar.id}}</label></td>
-              {% endif %}
-   {% endfor %}
-</div>
-{% endfor %}
     
 
+       {% for item in items %}
+
+
+            {% if avatar.ownerships[item.id].owned %}           
+            <td><label class="label label-success">{{avatar.ownerships[item.id].i_id}}</label></td>
+                    {% else %} 
+                    <td><label class="label label-danger">{{avatar.ownerships[item.id].i_id}}</label></td>
+                    {% endif %}
+                    {% endfor %}
+        </tr>
+   
+    {% endfor %}
+</tbody>
+</table>
 
 {% endblock %}

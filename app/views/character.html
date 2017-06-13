@@ -1,50 +1,50 @@
 {% extends "base.html" %}
 {% block content %}
 
-  <h1>{{avatar.name}}</h1>
- 
-   <table class="table table-striped table-bordered">
+<h1>{{avatar.name}}</h1>
+
+<table class="table table-striped table-bordered">
     <thead>
-      <tr>
-        <th><button type="button" class="btn btn-info">Main</button></th>
-        <th><button type="button" class="btn btn-success">Class</button></th>
-        <th><button type="button" class="btn btn-success">Element</button></th>
-        {% for item in items %}
-        <th><button type="button" class="btn btn-default">{{item.name}}</button></th>
-         {% endfor %}
-        
-      </tr>
+        <tr>
+            <th><button type="button" class="btn btn-info">Main</button></th>
+            <th><button type="button" class="btn btn-success">Class</button></th>
+            <th><button type="button" class="btn btn-success">Element</button></th>
+            {% for item in items %}
+            <th><button type="button" class="btn btn-default">{{item.name}}</button></th>
+            {% endfor %}
+
+        </tr>
     </thead>
 
     <tbody>
-    
-      <tr>
-        <td>
-              {% if avatar.main %}           
+
+        <tr>
+            <td>
+                {% if avatar.main %}           
                 <label class="label label-success">Yes</label>
-              {% else %}
+                {% else %}
                 <label class="label label-danger">No</label>
-              {% endif %}
-        </td>
-        <td><label class="label label-info">{{avatar.c_name}}</label></td> 
-        <td><label class="label label-info">{{avatar.e_type}}</label></td>
-        {% for status in avatar.ownerships %}
-        <td>
-              {% if status.owned %}           
-                <label class="label label-success">{{status.i_id}}</label>
-              {% else %}
-                <label class="label label-danger">rip</label>
-              {% endif %}
-          </td>
-          {% endfor %}
-          
-      </tr>
+                {% endif %}
+            </td>
+            <td><label class="label label-info">{{avatar.c_name}}</label></td> 
+            <td><label class="label label-info">{{avatar.e_type}}</label></td>
+
+            {% for item in items %}
+
+
+            {% if avatar.ownerships[item.id].owned %}           
+            <td><label class="label label-success">{{avatar.ownerships[item.id].i_id}}</label></td>
+                    {% else %} 
+                    <td><label class="label label-danger">{{avatar.ownerships[item.id].i_id}}</label></td>
+                    {% endif %}
+                    {% endfor %}
+        </tr>
     </tbody>
   </table>
   
    <img src="somewhere.jpg" alt="pitää selvittää miten linkitän kuvan toisesta sivustosta D:"> 
-   <p><a href="{{base_path}}/mypage/1">to my page</a></p>
-   <p><a href="{{base_path}}/overview">to overview</a></p>
+   <p><ahref="{{base_path}}/mypage/1">to my page</a></p>
+   <p><ahref="{{base_path}}/overview">to overview</a></p>
    
    {{avatar.ownerships|length}}
 {% endblock %}

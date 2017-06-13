@@ -13,7 +13,14 @@ class BaseController {
 
     public static function check_logged_in() {
         if (get_user_logged_in() == null) {
-            View::make('login.html');
+            View::make('login.html', array('error' => 'log in first please!'));
+        }
+    }
+    
+    public static function check_admin() {
+        $player = get_user_logged_in();
+        if ($player == null || $player->admin == false) {
+            View::make('overview.html', array('message' => 'de fuc'));
         }
     }
 
