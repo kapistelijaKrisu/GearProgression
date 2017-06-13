@@ -2,11 +2,17 @@
 
 class AvatarController {
     public static function store() {
+        Kint::dump($_POST);
         $params = $_POST;
-        
         $isMain = false;
         if($params['priority'] == 'main') {
             $isMain = true;
+        }
+        $player = Player::findByName($params['player']);
+        if ($player == null) {
+            $errors = array('player not found!');
+            Redirect::to('/admin', array('errors' => $errors));
+            return false;
         }
         $attributes = array(
             'name' => $params['character'],
@@ -18,13 +24,13 @@ class AvatarController {
             );
         $avatar = new Avatar($attributes);
         $errors = $avatar->errors();
-        
+        Kint::dump($errors);
         if (count($errors) == 0) {
-            $avatar->save();
+           // $avatar->save();
 
-            Redirect::to('/admin', array('message' => 'Character added.'));
+          //  Redirect::to('/admin', array('message' => 'Character added.'));
         } else {
-            Redirect::to('/admin', array('avatar_errors' => $errors, 'avatar_attributes' => $attributes));
+          //  Redirect::to('/admin', array('avatar_errors' => $errors, 'avatar_attributes' => $attributes));
         }
     }
     

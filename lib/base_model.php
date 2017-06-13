@@ -22,7 +22,7 @@ class BaseModel {
             if ($value == null) {
                 $arr = $this->{$validator}();
             } else {
-            $arr = $this->{$validator}($value);
+                $arr = $this->{$validator}($value);
             }
             $errors = array_merge($errors, $arr);
         }
@@ -41,13 +41,16 @@ class BaseModel {
     }
 
     public function validate_not_null($param_arr) {
+        Kint::dump($param_arr);
         $errors = array();
-        foreach ($param_arr as $att) {
-
-            if ($this->{$att} == null) {
+        foreach ($param_arr as $att => $val) {
+            Kint::dump($att);
+            Kint::dump($val);
+            if ($val == null) {
                 $errors[] = 'This cannot be empty: ' . $att . ' !';
             }
             return $errors;
         }
     }
+
 }

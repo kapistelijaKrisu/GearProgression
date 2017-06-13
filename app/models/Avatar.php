@@ -6,7 +6,8 @@ class Avatar extends BaseModel {
 
     public function __construct($attributes) {
         parent::__construct($attributes);
-        $this->validators = array('validate_name' => array('min' => 3, 'max' => 20));
+        $this->validators = array('validate_string_length' => array('min' => 3, 'max' => 20, 'attribute' => 'p_name'));
+    //    $this->validators = array('validate_string_length' => array('min' => 3, 'max' => 20, 'attribute' => 'p_name'));
         $this->validators = array('validate_not_null' => array(
                 'name' => $this->name,
                 'player' => $this->p_id,

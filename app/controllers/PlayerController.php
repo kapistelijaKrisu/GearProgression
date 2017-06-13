@@ -10,7 +10,7 @@ class PlayerController extends BaseController {
         $params = $_POST;
         $player = Player::authenticate($params['user'], $params['password']);
         if (!$player){
-            View::make('login.html', array('error' => 'Wrong username or password!', 'player' => $player));
+            View::make('login.html', array('errors' => 'Wrong username or password!', 'player' => $player));
         } else {
             $_SESSION['player'] = $player->id;
             Redirect::to('/overview', array('message' => 'login successful '.$player->name.'!', 'player' => $player));
@@ -41,7 +41,7 @@ class PlayerController extends BaseController {
 
             Redirect::to('/admin', array('message' => 'Player added.'));
         } else {
-            Redirect::to('/admin', array('playerErrors' => $errors, 'player_attributes' => $attributes));
+            Redirect::to('/admin', array('errors' => $errors, 'player_attributes' => $attributes));
         }
     }
 
