@@ -11,7 +11,7 @@ class Player extends BaseModel {
             'validate_string_length' => array('min' => 3, 'max' => 20, 'attribute' => 'name'),
             'name_is_unique',
             'validate_string_length' => array('min' => 3, 'max' => 20, 'attribute' => 'password'),
-            'validate_not_null' => array('admin'));
+            'validate_value_is_boolean' => $this->admin);
     }
 
     public static function authenticate($user, $password) {

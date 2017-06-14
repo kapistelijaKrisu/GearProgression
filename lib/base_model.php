@@ -39,6 +39,23 @@ class BaseModel {
         }
         return $errors;
     }
+    
+    public function validate_value_is_boolean($param) {
+        $errors = array();
+        
+        if ($param == null || is_bool($param) == false) {
+            $errors[] = 'value has to be boolean!';
+        }
+        return $errors;
+    }
+    public function validate_value_is_int($param) {
+        $errors = array();
+        
+        if ($param == null || is_int($param) == false) {
+            $errors[] = 'value has to be integer!';
+        }
+        return $errors;
+    }
 
     public function validate_not_null($param_arr) {
         Kint::dump($param_arr);

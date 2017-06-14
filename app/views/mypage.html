@@ -33,8 +33,12 @@
         <tr>
             <td><a href="{{base_path}}/character/{{avatar.id}}">{{avatar.name}}</td>
 
-    <form method="post" action="{{base_path}}/player/{{avatar.id}}/rename">           
-        <td><input type="text" class="form-group-sm" value=""></td>      
+    <form method="post" action="{{base_path}}/player/{{avatar.id}}/rename">   
+        {% if attributes[avatar.id] %}
+        <td><input type="text" class="form-group-sm" value="{{attributes[avatar.id]}}"></td>   
+        {% else }
+        <td><input type="text" class="form-group-sm" value=""></td>  
+        {% endif %}
         <td><button type="submit" class="btn btn-success">Apply</button></td>
     </form>
 
@@ -79,13 +83,16 @@
 
 <div>
     <form method="post" action="{{base_path}}/player/{{player.id}}/rename">
-        <input type="text" name="player_name" class="form-group"> 
+        <input type="text" name="player_name" value=""{{attributes.playerName}} class="form-group"> 
         <button type="submit" class="btn-lg btn-info">rename!</button>
     </form>
 </div><br>
+
+{% if not player.admin %}
 <div>     
     <form method="post" action="{{base_path}}/player/{{player.id}}/ditch">
         <button type="submit" class="btn-lg btn-danger">Leave from raid listing</button>
     </form>
 </div>
+{% endif %}
 {% endblock %}

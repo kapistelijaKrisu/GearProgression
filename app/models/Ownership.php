@@ -6,18 +6,23 @@ class Ownership extends BaseModel {
 
     public function _construct($attributes) {
         parent::__construct($attributes);
-        
+
         $this->validators = array(
-            'validate_references' => null,           
+            'validate_references' => null,
             'validate_not_null' => array('owner'));
     }
-    
-     public function validate_references() {
-        if (Ownership::findAvatarOwnerships($this->a_id) == null) {
-            $errors[] = 'This character id does not exist!';
-        }
-        if (Ownership::findAvatarOwnerships($this->i_id) == null) {
-            $errors[] = 'This item id does not exist!';
+
+    public function validate_references() {
+        if (is_int($this->a_id) && is_int($this->i_id)) {
+            if (Ownership::findAvatarOwnerships($this->a_id) == null) {
+                $errors[] = 'This character id does not exist!';
+            }
+            if (Ownership::findAvatarOwnerships($this->i_id) == null) {
+                $errors[] = 'This item id does not exist!';
+            }
+            
+        } else {
+            $errors[] = 'ids have to be integer!';
         }
         return $errors;
     }
@@ -68,4 +73,5 @@ class Ownership extends BaseModel {
             'p_is' => $this->i_id
         ));
     }
+
 }

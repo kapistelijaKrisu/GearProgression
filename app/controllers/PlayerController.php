@@ -37,7 +37,7 @@ class PlayerController extends BaseController {
         $errors = $player->errors();
 
         if (count($errors) == 0) {
-            //    $player->save();
+                $player->save();
 
             Redirect::to('/admin', array('message' => 'Player added.'));
         } else {
@@ -63,7 +63,9 @@ class PlayerController extends BaseController {
                     Redirect::to('/player/' . $player->id, array('messages' => 'lel uncaught error'));
                 }
             } else {
-                Redirect::to('/player/' . $player->id, array('messages' => $errors));
+                $att = array('playerName' => $player->name);
+              
+                Redirect::to('/player/' . $player->id, array('errors' => $errors, 'attributes' => $att));
             }
         }
     }
