@@ -40,7 +40,7 @@ class PageController extends BaseController {
   }
 
     public static function characterPage($id) {
-        $avatar = Avatar::findOne($id);
+        $avatar = Avatar::findById($id);
         $items = Item::findAll();
         View::make('character.html', array('avatar' => $avatar, 'items' => $items));
     }

@@ -6,14 +6,14 @@ class Avatar extends BaseModel {
 
     public function __construct($attributes) {
         parent::__construct($attributes);
-        $this->validators = array('validate_string_length' => array('min' => 3, 'max' => 20, 'attribute' => 'p_name'));
-    //    $this->validators = array('validate_string_length' => array('min' => 3, 'max' => 20, 'attribute' => 'p_name'));
-        $this->validators = array('validate_not_null' => array(
-                'name' => $this->name,
+        $this->validators = array(
+            'validate_string_lengths' => array(
+                array('min' => 3, 'max' => 20, 'attribute' => 'name')),
+            'validate_not_null' => array(
                 'player' => $this->p_id,
                 'element' => $this->e_id,
                 'class' => $this->c_id,
-                'main' => $this->main             
+                'main' => $this->main
         ));
     }
 
@@ -46,9 +46,9 @@ class Avatar extends BaseModel {
 
                 $ownership = array();
                 $ownerships[$row['i_id']] = new Ownership(array(
-                        'a_id' => $row['a_id'],
-                        'i_id' => $row['i_id'],
-                        'owned' => $row['owned']
+                    'a_id' => $row['a_id'],
+                    'i_id' => $row['i_id'],
+                    'owned' => $row['owned']
                 ));
 
                 $currentAvatar = new Avatar(array(
@@ -107,9 +107,9 @@ class Avatar extends BaseModel {
 
                 $ownership = array();
                 $ownerships[$row['i_id']] = new Ownership(array(
-                        'a_id' => $row['a_id'],
-                        'i_id' => $row['i_id'],
-                        'owned' => $row['owned']
+                    'a_id' => $row['a_id'],
+                    'i_id' => $row['i_id'],
+                    'owned' => $row['owned']
                 ));
 
                 $currentAvatar = new Avatar(array(
@@ -137,7 +137,7 @@ class Avatar extends BaseModel {
         return $avatars;
     }
 
-    public static function findOne($id) {
+    public static function findById($id) {
 
 
 
@@ -163,12 +163,12 @@ class Avatar extends BaseModel {
         $currentAvatar = null;
         foreach ($rows as $row) {
             if ($currentAvatar == null) {
-                
+
                 $ownership = array();
                 $ownerships[$row['i_id']] = new Ownership(array(
-                        'a_id' => $row['id'],
-                        'i_id' => $row['i_id'],
-                        'owned' => $row['owned']
+                    'a_id' => $row['id'],
+                    'i_id' => $row['i_id'],
+                    'owned' => $row['owned']
                 ));
 
                 $currentAvatar = new Avatar(array(
@@ -215,10 +215,18 @@ class Avatar extends BaseModel {
         Kint::dump($row);
         $this->id = $row['id'];
     }
-    
+
     public function delete() {
         $query = DB::connection()->prepare('DELETE FROM Avatar WHERE id = :id;');
         $query->execute(array('id' => $this->id));
+    }
+    
+    public function changeName() {
+        $query = DB::connection()->prepare('UPDATE Avatar SET name = :toWhat WHERE id = :id;');
+        $query->execute(array(
+            'toWhat' => $this->name,
+            'id' => $this->id
+        ));
     }
 
 }

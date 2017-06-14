@@ -4,15 +4,9 @@
 
 <h1>{{player.name}}</h1>
 
-{% if messages %}
-<div class="alert alert-info">
-    <ul>
-        {% for msg in messages %}
-        <li>{{msg}}</li>
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}
+{% import "macros/messages.html" as msg %}
+{{msg.message("#{message}")}}
+{{msg.errors("#{errors}")}}
 
 <div class="alert alert-info">
     <a href="{{base_path}}/overview">Home Page</a>
@@ -30,15 +24,13 @@
     <tbody>
 
         {% for avatar in avatars %}
+        {% set arrow = avatar.id %}
         <tr>
             <td><a href="{{base_path}}/character/{{avatar.id}}">{{avatar.name}}</td>
 
-    <form method="post" action="{{base_path}}/player/{{avatar.id}}/rename">   
-        {% if attributes[avatar.id] %}
-        <td><input type="text" class="form-group-sm" value="{{attributes[avatar.id]}}"></td>   
-        {% else }
-        <td><input type="text" class="form-group-sm" value=""></td>  
-        {% endif %}
+    <form method="post" action="{{base_path}}/player/{{player.id}}/renameChar/{{avatar.id}}">   
+        <td><input type="text" name="avatar_name" class="form-group-sm" value="{{attributes.avatar.name}}"></td> 
+     <!--   <td><p>{{attributes.2}} - {{arrow}} - {{attributes.arrow}} - {{attributes.avatar.name}}</p>-->
         <td><button type="submit" class="btn btn-success">Apply</button></td>
     </form>
 
@@ -83,8 +75,15 @@
 
 <div>
     <form method="post" action="{{base_path}}/player/{{player.id}}/rename">
-        <input type="text" name="player_name" value=""{{attributes.playerName}} class="form-group"> 
+        <input type="text" name="player_name" value="{{attributes.playerName}}" class="form-group"> 
         <button type="submit" class="btn-lg btn-info">rename!</button>
+    </form>
+</div><br>
+
+<div>
+    <form method="post" action="{{base_path}}/player/{{player.id}}/password">
+        <input type="text" name="player_pass" value="" class="form-group"> 
+        <button type="submit" class="btn-lg btn-info">new password!</button>
     </form>
 </div><br>
 

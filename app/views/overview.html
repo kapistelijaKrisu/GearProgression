@@ -1,13 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-
+{% import "macros/messages.html" as msg %}
 <h1>Status</h1>
 user:booom pass:321
-{% if message %}
-<div class="alert alert-info">
-    {{message}}
-</div>
-{% endif %}
+
+{{msg.message("#{message}")}}
+{{msg.errors("#{errors}")}}
 {% if player %}
 
 <div class="alert alert-success">

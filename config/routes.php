@@ -22,7 +22,7 @@ $routes->get('/admin', function() {
         PageController::adminPage(array());
         
     }else {
-    Redirect::to('/overview', array('message' => 'sneaky'));
+    Redirect::to('/overview', array('errors' => array('sneaky')));
     }
 });
 $routes->get('/player/:id', function($id) {
@@ -82,14 +82,18 @@ $routes->post('/player/:id/newChar/', function() {
     Redirect::to('/overview', array('message' => 'nothing happen.'));
 });
 
-$routes->post('/player/:id/delChar', function() {
-    PlayerController::deleteSelf();
+$routes->post('/player/:id/renameChar/:a_id', function($p_id, $a_id) {
+    PlayerController::renameOwnedChar($p_id, $a_id);
 });
 $routes->post('/player/:id/ditch', function() {
-    PlayerController::delete();
+    PlayerController::deleteSelf();
 });
 
 $routes->post('/player/:id/rename', function() {
     PlayerController::rename();
+});
+
+$routes->post('/player/:id/password', function() {
+    PlayerController::changePassword();
 });
 

@@ -18,24 +18,26 @@ class BaseModel {
     public function errors() {
 
         $errors = array();
-        foreach ($this->validators as $validator => $value) {
-            if ($value == null) {
-                $arr = $this->{$validator}();
+        foreach ($this->validators as $key => $value) {
+            if ($key == null) {
+                $arr = $this->{$value}();
             } else {
-                $arr = $this->{$validator}($value);
+                $arr = $this->{$key}($value);
             }
             $errors = array_merge($errors, $arr);
         }
         return $errors;
     }
 
-    public function validate_string_length($param_arr) {
+    public function validate_string_lengths($param_arr) {
         $errors = array();
-        $trimmed = preg_replace('/\s+/', '', $this->{$param_arr['attribute']});
+        foreach ($param_arr as $toValidate) {
+        $trimmed = preg_replace('/\s+/', '', $this->{$toValidate['attribute']});
         if ($trimmed == null ||
-                strlen($trimmed) < $param_arr['min'] ||
-                strlen($trimmed) > $param_arr['max']) {
-            $errors[] = 'Name has to be ' . $param_arr['min'] . '-' . $param_arr['max'] . ' characters long and spaces do not count!';
+                strlen($trimmed) < $toValidate['min'] ||
+                strlen($trimmed) > $toValidate['max']) {
+            $errors[] = $toValidate['attribute'].' has to be ' . $toValidate['min'] . '-' . $toValidate['max'] . ' characters long and spaces do not count!';
+        }
         }
         return $errors;
     }
@@ -58,11 +60,8 @@ class BaseModel {
     }
 
     public function validate_not_null($param_arr) {
-        Kint::dump($param_arr);
         $errors = array();
         foreach ($param_arr as $att => $val) {
-            Kint::dump($att);
-            Kint::dump($val);
             if ($val == null) {
                 $errors[] = 'This cannot be empty: ' . $att . ' !';
             }

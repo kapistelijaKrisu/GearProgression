@@ -8,9 +8,10 @@ class Player extends BaseModel {
         parent::__construct($attributes);
 
         $this->validators = array(
-            'validate_string_length' => array('min' => 3, 'max' => 20, 'attribute' => 'name'),
+            'validate_string_lengths' => array(
+                array('min' => 3, 'max' => 20, 'attribute' => 'password'), 
+                array('min' => 3, 'max' => 20, 'attribute' => 'name')),
             'name_is_unique',
-            'validate_string_length' => array('min' => 3, 'max' => 20, 'attribute' => 'password'),
             'validate_value_is_boolean' => $this->admin);
     }
 
@@ -92,7 +93,7 @@ class Player extends BaseModel {
         return null;
     }
 
-    public function save() {
+    public function add_new() {
         $query = DB::connection()->prepare('INSERT INTO Player (name, password, admin) VALUES (:name, :password, :admin) RETURNING id');
         $query->execute(array(
             'name' => $this->name,
@@ -119,9 +120,9 @@ class Player extends BaseModel {
         ));
     }
 
-    public function delete($id) {
+    public function delete() {
         $query = DB::connection()->prepare('DELETE FROM Player WHERE id = :id;');
-        $query->execute(array('id' => $id
+        $query->execute(array('id' => $this->id
         ));
     }
 

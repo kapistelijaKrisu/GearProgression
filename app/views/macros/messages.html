@@ -1,4 +1,4 @@
-{% macro message %}
+{% macro message(message) %}
 {% if message %}
 <div class="alert alert-info">
     {{message}}
@@ -6,6 +6,7 @@
 {% endif %}
 {% endmacro %}
 
+{% macro messages(messages) %}
 {% if messages %}
 <div class="alert alert-info">
     <ul>
@@ -15,8 +16,10 @@
     </ul>
 </div>
 {% endif %}
+{% endmacro %}
 
-{% macro errors %} {
+
+{% macro errors(errors) %}
 {% if errors %}
 <div class="alert alert-danger">
     <ul>
@@ -26,3 +29,4 @@
     </ul>
 </div>
 {% endif %}
+{% endmacro %}
