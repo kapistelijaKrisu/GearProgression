@@ -12,7 +12,7 @@ class Player extends BaseModel {
                 array('min' => 3, 'max' => 20, 'attribute' => 'password'), 
                 array('min' => 3, 'max' => 20, 'attribute' => 'name')),
             'name_is_unique',
-            'validate_value_is_boolean' => $this->admin);
+            'validate_value_is_boolean' => 'admin');
     }
 
     public static function authenticate($user, $password) {

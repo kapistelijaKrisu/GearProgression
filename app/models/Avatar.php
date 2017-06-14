@@ -11,11 +11,10 @@ class Avatar extends BaseModel {
             'validate_string_lengths' => array(
                 array('min' => 3, 'max' => 20, 'attribute' => 'name')),
             'validate_not_null' => array(
-                // 'player' => $this->p_id,
-                // 'element' => $this->e_id,
-                // 'class' => $this->c_id,
-                'main' => $this->main
-        ));
+                 'player' => $this->player,
+                 'element' => $this->element,
+                 'class' => $this->clas),
+            'validate_value_is_boolean' => 'main');
     }
 
     public function addOwnershipFromRow($row) {
@@ -86,9 +85,7 @@ class Avatar extends BaseModel {
         $query = DB::connection()->prepare(Avatar::getCoreSelect()
                 . ' WHERE Player.id = :id'
                 . ' ORDER BY a_id');
-
         $query->execute(array('id' => $id));
-
         $rows = $query->fetchAll();
         $avatars = array();
 
@@ -107,27 +104,19 @@ class Avatar extends BaseModel {
     }
 
     public static function findById($id) {
-
-
-
         $query = DB::connection()->prepare(Avatar::getCoreSelect()
                 . ' WHERE Avatar.id = :id');
-
         $query->execute(array('id' => $id));
-
         $rows = $query->fetchAll();
 
         $currentAvatar = null;
         foreach ($rows as $row) {
             if ($currentAvatar == null) {
-
                 $currentAvatar = Avatar::extractData($row);
                 $avatars[] = $currentAvatar;
             }
             $currentAvatar->addOwnershipFromRow($row);
         }
-
-
         return $currentAvatar;
     }
 

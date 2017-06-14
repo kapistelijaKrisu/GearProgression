@@ -42,9 +42,9 @@ class BaseModel {
         return $errors;
     }
     
-    public function validate_value_is_boolean($param) {
+    public function validate_value_is_boolean($asName) {//fix to as param name
         $errors = array();
-        
+        $param = $this->{$asName};
         if ($param == null || is_bool($param) == false) {
             $errors[] = 'value has to be boolean!';
         }

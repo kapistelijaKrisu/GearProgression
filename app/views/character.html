@@ -26,8 +26,8 @@
                 <label class="label label-danger">No</label>
                 {% endif %}
             </td>
-            <td><label class="label label-info">{{avatar.c_name}}</label></td> 
-            <td><label class="label label-info">{{avatar.e_type}}</label></td>
+            <td><label class="label label-info">{{avatar.clas.name}}</label></td> 
+            <td><label class="label label-info">{{avatar.element.type}}</label></td>
 
             {% for item in items %}
 
@@ -43,8 +43,7 @@
   </table>
   
    <img src="somewhere.jpg" alt="pitää selvittää miten linkitän kuvan toisesta sivustosta D:"> 
-   <p><ahref="{{base_path}}/mypage/1">to my page</a></p>
-   <p><ahref="{{base_path}}/overview">to overview</a></p>
-   
-   {{avatar.ownerships|length}}
+   <p><a href="{{base_path}}/player/{{avatar.player.id}}">to my page</a></p>
+   <p><a href="{{base_path}}/overview">to overview</a></p>
+
 {% endblock %}
