@@ -2,27 +2,53 @@
 
 class Avatar extends BaseModel {
 
-    public $id, $p_id, $p_name, $e_id, $e_type, $c_id, $c_name, $name, $main, $stats, $ownerships;
+    public $id, $player, $element, $clas, $name, $main, $stats, $ownerships;
 
     public function __construct($attributes) {
         parent::__construct($attributes);
+        $this->ownerships = array();
         $this->validators = array(
             'validate_string_lengths' => array(
                 array('min' => 3, 'max' => 20, 'attribute' => 'name')),
             'validate_not_null' => array(
-                'player' => $this->p_id,
-                'element' => $this->e_id,
-                'class' => $this->c_id,
+                // 'player' => $this->p_id,
+                // 'element' => $this->e_id,
+                // 'class' => $this->c_id,
                 'main' => $this->main
         ));
     }
 
-    public static function findAll() {
-        $query = DB::connection()->prepare('SELECT '
-                . 'Avatar.id as a_id, Avatar.name, Avatar.stats, Avatar.main,'
+    public function addOwnershipFromRow($row) {
+        $this->ownerships[$row['i_id']] = new Ownership(array(
+            'a_id' => $row['a_id'],
+            'i_id' => $row['i_id'],
+            'owned' => $row['owned']
+        ));
+    }
+
+    public static function extractData($row) {
+        $ele = new Element(array('id' => $row['e_id'], 'type' => $row['e_type']));
+        $clas = new Clas(array('id' => $row['c_id'], 'name' => $row['c_name']));
+        $player = new Player(array('id' => $row['p_id'], 'name' => $row['p_name'], 'admin' => $row['p_admin'], 'password' => $row['password']));
+        $avatar = new Avatar(array(
+            'id' => $row['a_id'],
+            'player' => $player,
+            'clas' => $clas,
+            'element' => $ele,
+            'name' => $row['name'],
+            'main' => $row['main'],
+            'stats' => $row['stats']));
+        return $avatar;
+    }
+
+    public static function getCoreSelect() {
+        return 'SELECT'
+                . ' Avatar.id as a_id, Avatar.name, Avatar.stats, Avatar.main,'
                 . ' Avatar.c_id, Avatar.e_id,'
                 . ' Player.name AS p_name, '
                 . ' Player.id as p_id,'
+                . ' Player.admin as p_admin,'
+                . ' Player.password as password,'
                 . ' Clas.name as c_name,'
                 . ' Element.type as e_type,'
                 . ' Ownership.i_id,'
@@ -30,7 +56,11 @@ class Avatar extends BaseModel {
                 . ' FROM Avatar LEFT JOIN Ownership ON Avatar.id = Ownership.a_id'
                 . ' LEFT JOIN Player ON Player.id = Avatar.p_id'
                 . ' LEFT JOIN Clas ON Clas.id = Avatar.c_id'
-                . ' LEFT JOIN Element ON Element.id = Avatar.e_id'
+                . ' LEFT JOIN Element ON Element.id = Avatar.e_id';
+    }
+
+    public static function findAll() {
+        $query = DB::connection()->prepare(Avatar::getCoreSelect()
                 . ' ORDER BY a_id');
         $query->execute();
 
@@ -43,54 +73,17 @@ class Avatar extends BaseModel {
             if ($counter != $row['a_id']) {
                 $counter = $row['a_id'];
 
-
-                $ownership = array();
-                $ownerships[$row['i_id']] = new Ownership(array(
-                    'a_id' => $row['a_id'],
-                    'i_id' => $row['i_id'],
-                    'owned' => $row['owned']
-                ));
-
-                $currentAvatar = new Avatar(array(
-                    'id' => $row['a_id'],
-                    'p_id' => $row['p_id'],
-                    'p_name' => $row['p_name'],
-                    'c_name' => $row['c_name'],
-                    'e_id' => $row['e_id'],
-                    'e_type' => $row['e_type'],
-                    'c_id' => $row['c_id'],
-                    'name' => $row['name'],
-                    'main' => $row['main'],
-                    'stats' => $row['stats'],
-                    'ownerships' => $ownerships,
-                ));
+                $currentAvatar = Avatar::extractData($row);
                 $avatars[] = $currentAvatar;
-            } else {
-                $currentAvatar->ownerships[$row['i_id']] = new Ownership(array(
-                    'a_id' => $row['a_id'],
-                    'i_id' => $row['i_id'],
-                    'owned' => $row['owned']
-                ));
             }
+            $currentAvatar->addOwnershipFromRow($row);
         }
         return $avatars;
     }
 
     public static function findByPlayer($id) {
 
-        $query = DB::connection()->prepare('SELECT '
-                . 'Avatar.id as a_id, Avatar.name, Avatar.stats, Avatar.main,'
-                . ' Avatar.c_id, Avatar.e_id,'
-                . ' Player.name AS p_name, '
-                . ' Player.id as p_id,'
-                . ' Clas.name as c_name,'
-                . ' Element.type as e_type,'
-                . ' Ownership.i_id,'
-                . ' Ownership.owned'
-                . ' FROM Avatar LEFT JOIN Ownership ON Avatar.id = Ownership.a_id'
-                . ' LEFT JOIN Player ON Player.id = Avatar.p_id'
-                . ' LEFT JOIN Clas ON Clas.id = Avatar.c_id'
-                . ' LEFT JOIN Element ON Element.id = Avatar.e_id'
+        $query = DB::connection()->prepare(Avatar::getCoreSelect()
                 . ' WHERE Player.id = :id'
                 . ' ORDER BY a_id');
 
@@ -105,34 +98,10 @@ class Avatar extends BaseModel {
             if ($counter != $row['a_id']) {
                 $counter = $row['a_id'];
 
-                $ownership = array();
-                $ownerships[$row['i_id']] = new Ownership(array(
-                    'a_id' => $row['a_id'],
-                    'i_id' => $row['i_id'],
-                    'owned' => $row['owned']
-                ));
-
-                $currentAvatar = new Avatar(array(
-                    'id' => $row['a_id'],
-                    'p_id' => $row['p_id'],
-                    'p_name' => $row['p_name'],
-                    'c_name' => $row['c_name'],
-                    'e_id' => $row['e_id'],
-                    'e_type' => $row['e_type'],
-                    'c_id' => $row['c_id'],
-                    'name' => $row['name'],
-                    'main' => $row['main'],
-                    'stats' => $row['stats'],
-                    'ownerships' => $ownerships
-                ));
+                $currentAvatar = Avatar::extractData($row);
                 $avatars[] = $currentAvatar;
-            } else {
-                $currentAvatar->ownerships[$row['i_id']] = new Ownership(array(
-                    'a_id' => $row['a_id'],
-                    'i_id' => $row['i_id'],
-                    'owned' => $row['owned']
-                ));
             }
+            $currentAvatar->addOwnershipFromRow($row);
         }
         return $avatars;
     }
@@ -141,19 +110,7 @@ class Avatar extends BaseModel {
 
 
 
-        $query = DB::connection()->prepare('SELECT'
-                . ' Avatar.id, Avatar.name, Avatar.stats, Avatar.main,'
-                . ' Avatar.c_id, Avatar.e_id,'
-                . ' Player.name AS p_name, '
-                . ' Player.id as p_id,'
-                . ' Clas.name as c_name,'
-                . ' Element.type as e_type,'
-                . ' Ownership.i_id,'
-                . ' Ownership.owned'
-                . ' FROM Avatar LEFT JOIN Ownership ON Avatar.id = Ownership.a_id'
-                . ' LEFT JOIN Player ON Player.id = Avatar.p_id'
-                . ' LEFT JOIN Clas ON Clas.id = Avatar.c_id'
-                . ' LEFT JOIN Element ON Element.id = Avatar.e_id'
+        $query = DB::connection()->prepare(Avatar::getCoreSelect()
                 . ' WHERE Avatar.id = :id');
 
         $query->execute(array('id' => $id));
@@ -164,33 +121,10 @@ class Avatar extends BaseModel {
         foreach ($rows as $row) {
             if ($currentAvatar == null) {
 
-                $ownership = array();
-                $ownerships[$row['i_id']] = new Ownership(array(
-                    'a_id' => $row['id'],
-                    'i_id' => $row['i_id'],
-                    'owned' => $row['owned']
-                ));
-
-                $currentAvatar = new Avatar(array(
-                    'id' => $row['id'],
-                    'p_id' => $row['p_id'],
-                    'p_name' => $row['p_name'],
-                    'c_name' => $row['c_name'],
-                    'e_id' => $row['e_id'],
-                    'e_type' => $row['e_type'],
-                    'c_id' => $row['c_id'],
-                    'name' => $row['name'],
-                    'main' => $row['main'],
-                    'stats' => $row['stats'],
-                    'ownerships' => $ownerships
-                ));
-            } else {
-                $currentAvatar->ownerships[$row['i_id']] = new Ownership(array(
-                    'id' => $row['id'],
-                    'i_id' => $row['i_id'],
-                    'owned' => $row['owned']
-                ));
+                $currentAvatar = Avatar::extractData($row);
+                $avatars[] = $currentAvatar;
             }
+            $currentAvatar->addOwnershipFromRow($row);
         }
 
 
@@ -220,7 +154,7 @@ class Avatar extends BaseModel {
         $query = DB::connection()->prepare('DELETE FROM Avatar WHERE id = :id;');
         $query->execute(array('id' => $this->id));
     }
-    
+
     public function changeName() {
         $query = DB::connection()->prepare('UPDATE Avatar SET name = :toWhat WHERE id = :id;');
         $query->execute(array(
