@@ -16,6 +16,7 @@
     <thead>
         <tr>
             <th><label class="label label-info">Character</label></th>
+            <th><label class="label label-info">Priority</label></th>
             <th><label class="label label-info">New Name</label></th>
             <th><label class="label label-danger">Rename</label></th>
         </tr>
@@ -27,10 +28,16 @@
         {% set arrow = avatar.id %}
         <tr>
             <td><a href="{{base_path}}/character/{{avatar.id}}">{{avatar.name}}</td>
-
+            <td><label
+                    {% if avatar.main %}
+                    class="label label-success">main</label>
+                {% else %} 
+                class="label label-danger">alt</label>
+            </td>
+            {% endif %}
     <form method="post" action="{{base_path}}/player/{{player.id}}/renameChar/{{avatar.id}}">   
         <td><input type="text" name="avatar_name" class="form-group-sm" value="{{attributes.avatar.name}}"></td> 
-     <!--   <td><p>{{attributes.2}} - {{arrow}} - {{attributes.arrow}} - {{attributes.avatar.name}}</p>-->
+        <!--   <td><p>{{attributes.2}} - {{arrow}} - {{attributes.arrow}} - {{attributes.avatar.name}}</p>-->
         <td><button type="submit" class="btn btn-success">Apply</button></td>
     </form>
 

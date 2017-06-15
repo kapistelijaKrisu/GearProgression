@@ -9,10 +9,12 @@ user:booom pass:321
 {% if player %}
 
 <div class="alert alert-success">
-    <a href="{{base_path}}/player/{{player.id}}">to my page</a>
     <form method="post" action="{{base_path}}/logout">
         <button type="submit" class="btn btn-success">Log Out</button>
     </form>
+</div>
+<div class="alert alert-info">
+    <a href="{{base_path}}/player/{{player.id}}">to my page</a>
 </div>
 {% if player.admin %}
 <div class="alert alert-danger">
@@ -22,7 +24,9 @@ user:booom pass:321
 
 {% else %}
 
-<a href="{{base_path}}/login">login</a>
+<div class="alert alert-info">
+    <a href="{{base_path}}/login">login</a>
+</div>
 {% endif %}
 
 
@@ -58,22 +62,22 @@ user:booom pass:321
             <td><label class="label label-info">{{avatar.element.type}}</label></td>
             <td><label class="label label-info">{{avatar.clas.name}}</label></td> 
 
-     
-    
 
-       {% for item in items %}
+
+
+            {% for item in items %}
 
 
             {% if avatar.ownerships[item.id].owned %}           
-            <td><label class="label label-success">{{avatar.ownerships[item.id].i_id}}</label></td>
-                    {% else %} 
-                    <td><label class="label label-danger">{{avatar.ownerships[item.id].i_id}}</label></td>
-                    {% endif %}
-                    {% endfor %}
+            <td><label class="label label-success">Owned</label></td>
+            {% else %} 
+            <td><label class="label label-danger">RIP</label></td>
+            {% endif %}
+            {% endfor %}
         </tr>
-   
-    {% endfor %}
-</tbody>
+
+        {% endfor %}
+    </tbody>
 </table>
 
 {% endblock %}

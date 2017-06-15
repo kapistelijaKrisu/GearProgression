@@ -8,10 +8,10 @@ $routes->get('/hiekkalaatikko', function() {
     PageController::sandbox();
 });
 $routes->get('/login', function() {
-    PlayerController::login();
+    LoginController::login();
 });
 $routes->post('/logout', function() {
-    PlayerController::handle_logout();
+    LoginController::handle_logout();
 });
 $routes->get('/overview', function() {
     PageController::overview();
@@ -26,14 +26,14 @@ $routes->get('/admin', function() {
     }
 });
 $routes->get('/player/:id', function($id) {
-    PageController::myPage($id);
+    PlayerController::myPage($id);
 });
 $routes->get('/character/:id', function($id) {
     PageController::characterPage($id);
 });
 
 $routes->post('/login', function() {
-    PlayerController::handle_login();
+    LoginController::handle_login();
 });
 $routes->post('/admin/newEle', function() {
     ElementController::store();
@@ -79,7 +79,7 @@ $routes->post('/admin/delChar', function() {
 
 
 $routes->post('/player/:id/newChar/', function() {
-    Redirect::to('/overview', array('message' => 'nothing happen.'));
+    PlayerController::create_character_to_self();
 });
 
 $routes->post('/player/:id/renameChar/:a_id', function($p_id, $a_id) {

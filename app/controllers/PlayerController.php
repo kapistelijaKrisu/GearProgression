@@ -2,28 +2,20 @@
 
 class PlayerController extends BaseController {
 
-    public static function login() {
-        View::make('login.html');
+    public static function myPage($id) {
+        $player = Player::findById($id);
+        $items = Item::findAll();
+        $avatars = Avatar::findByPlayer($id);
+        $classes = Clas::all();
+        $elements = Element::all();
+        View::make('mypage.html', array('avatars' => $avatars, 'items' => $items,
+            'classes' => $classes, 'elements' => $elements, 'player' => $player));
     }
 
-    public static function handle_login() {
-        $params = $_POST;
-        $player = Player::authenticate($params['user'], $params['password']);
-        if (!$player) {
-            View::make('login.html', array('errors' => 'Wrong username or password!', 'player' => $player));
-        } else {
-            $_SESSION['player'] = $player->id;
-            Redirect::to('/overview', array('message' => 'login successful ' . $player->name . '!', 'player' => $player));
+    public static function store() {//to admin
+        if (BaseController::get_user_logged_in()->admin == false) {
+            Redirect::to('/overview', array('message' => 'De fuc?'));
         }
-    }
-
-    public static function handle_logout() {
-
-        $_SESSION['player'] = null;
-        Redirect::to('/overview', array('message' => 'logout successful'));
-    }
-
-    public static function store() {
         $params = $_POST;
         $attributes = array(
             'name' => $params['player_name'],
@@ -101,30 +93,63 @@ class PlayerController extends BaseController {
     }
 
     public static function renameOwnedChar($p_id, $a_id) {
-        $logged_in_id = $_SESSION['player'];
+        $logged_in = get_user_logged_in();
+        if ($logged_in == null || $logged_in->id != $p_id) {
+            Redirect::to('/overview', array('message' => 'De fuc?'));
+        }
         $avatar = Avatar::findById($a_id);
+        if ($avatar == null) {
+            Redirect::to('/player/' . $p_id, array('errors' => 'Character does not exist!'));
+        }
+        if ($avatar->owner_id != $logged_in->id) {
+            Redirect::to('/overview', array('message' => 'De fuc?'));
+        }
         
-        if ($avatar == null || $avatar->p_id != $logged_in_id) {
-            Redirect::to('/overview', array('message' => 'De fuc?', 'player' => $player));
+        
+        $avatar->name = $_POST['avatar_name'];
+        $errors = $avatar->errors();
+
+
+        if (sizeof($errors) == 0) {
+            $avatar->changeName();
+            Redirect::to('/player/' . $p_id, array('message' => 'Character rename succesful!'));
         } else {
-            $avatar->name = $_POST['avatar_name'];
-            $errors = $avatar->errors();
-        
-            
-            if (sizeof($errors) == 0) {
-                $avatar->changeName();
-                Redirect::to('/player/' . $p_id, array('message' => 'Character rename succesful!'));
-            } else {
-                $att = array($avatar->id => $avatar->name);
-             
-                Redirect::to('/player/' . $logged_in_id, array('errors' => $errors, 'attributes' => $att));
-                Kint::dump($att);
-            }
-            /*
-            Kint::dump($a_id);
-            Kint::dump($p_id);
-            Kint::dump($avatar);
-            Kint::dump($att);*/
+            $att = array($avatar->id => $avatar->name);
+
+            Redirect::to('/player/' . $logged_in_id, array('errors' => $errors, 'attributes' => $att));
         }
     }
+
+    public static function create_character_to_self() {
+        $logged_in = parent::get_user_logged_in();
+        if ($logged_in == null) {
+            Redirect::to('/overview', array('message' => 'De fuc?'));
+        }
+      
+        $main = false;
+        if ($_POST['priority'] == 'main') {
+            $main = true;
+        }
+         $attributes = array(
+            'name' => $_POST['character'],
+            'element' => Element::findByType($_POST['element']),
+             'main' => $main,
+             'clas' => Clas::findByName($_POST['class']),
+             'owner_id' => $logged_in->id,
+             
+        );
+        
+         $avatar = new Avatar($attributes);
+         $errors = $avatar->errors();
+         if (sizeof($errors) == 0) {
+            $avatar->save();
+            Redirect::to('/player/' . $logged_in->id, array('message' => 'Character has been listed!'));
+        } else {
+           $att = array();//$avatar->id => $avatar->name);
+
+            Redirect::to('/player/' . $logged_in->id, array('errors' => $errors, 'attributes' => $att));
+        }
+
+    }
+
 }

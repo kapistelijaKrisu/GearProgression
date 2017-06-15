@@ -2,7 +2,7 @@
 
 class Avatar extends BaseModel {
 
-    public $id, $player, $element, $clas, $name, $main, $stats, $ownerships;
+    public $id, $owner_id, $element, $clas, $name, $main, $stats, $ownerships;
 
     public function __construct($attributes) {
         parent::__construct($attributes);
@@ -10,11 +10,56 @@ class Avatar extends BaseModel {
         $this->validators = array(
             'validate_string_lengths' => array(
                 array('min' => 3, 'max' => 20, 'attribute' => 'name')),
-            'validate_not_null' => array(
-                 'player' => $this->player,
-                 'element' => $this->element,
-                 'class' => $this->clas),
-            'validate_value_is_boolean' => 'main');
+            'classes_are_correct' => array(
+                'Element' => 'element',
+                'Clas' => 'clas'),
+            'validate_value_is_boolean' => 'main',
+            'check_name_is_unique',
+            'check_non_admin_main_avatar',
+            'check_non_admin_avatar_limit_count' => 10
+        );
+    }
+
+    public function check_non_admin_avatar_limit_count($setLimit) {
+        $errors = array();
+        if (Player::findById($this->owner_id)->admin == true) {
+            return $errors;
+        }
+        $avatars = Avatar::findByPlayer($this->owner_id);
+        if (sizeof($avatars) == $setLimit) {
+            if ($this->id == null || Avatar::findById($this->id) == null) {
+                $errors[] = 'pleb can have only ' . $setLimit . ' characters!';
+            }
+        } else if (sizeof($avatars) > $setLimit) {
+            $errors[] = 'how do u have more than ' . $setLimit . ' character(s) without admin rights!';
+        }
+        return $errors;
+    }
+
+    public function check_non_admin_main_avatar() {
+        $errors = array();
+        if ($this->main == false) {
+            return $errors;
+        }
+        if (Player::findById($this->owner_id)->admin == true) {
+            return $errors;
+        }
+        $found_mains = Avatar::get_main_avatars($this->owner_id);
+        if (sizeof($found_mains) == 1) {
+            if ($this->id == null || $this->id != $found_mains[0])
+                $errors[] = 'pleb can have only one main!';
+        } else if (sizeof($found_mains) > 1) {
+            $errors[] = 'how do u have more than one main character without admin rights!';
+        }
+        return $errors;
+    }
+
+    public function check_name_is_unique() {
+        $errors = array();
+        if (sizeof(Avatar::get_avatars_by_name($this->name)) != 0) {
+            $errors[] = 'Character name is already used!';
+        }
+        return $errors;
     }
 
     public function addOwnershipFromRow($row) {
@@ -28,10 +73,9 @@ class Avatar extends BaseModel {
     public static function extractData($row) {
         $ele = new Element(array('id' => $row['e_id'], 'type' => $row['e_type']));
         $clas = new Clas(array('id' => $row['c_id'], 'name' => $row['c_name']));
-        $player = new Player(array('id' => $row['p_id'], 'name' => $row['p_name'], 'admin' => $row['p_admin'], 'password' => $row['password']));
         $avatar = new Avatar(array(
             'id' => $row['a_id'],
-            'player' => $player,
+            'owner_id' => $row['p_id'],
             'clas' => $clas,
             'element' => $ele,
             'name' => $row['name'],
@@ -44,10 +88,7 @@ class Avatar extends BaseModel {
         return 'SELECT'
                 . ' Avatar.id as a_id, Avatar.name, Avatar.stats, Avatar.main,'
                 . ' Avatar.c_id, Avatar.e_id,'
-                . ' Player.name AS p_name, '
                 . ' Player.id as p_id,'
-                . ' Player.admin as p_admin,'
-                . ' Player.password as password,'
                 . ' Clas.name as c_name,'
                 . ' Element.type as e_type,'
                 . ' Ownership.i_id,'
@@ -58,12 +99,7 @@ class Avatar extends BaseModel {
                 . ' LEFT JOIN Element ON Element.id = Avatar.e_id';
     }
 
-    public static function findAll() {
-        $query = DB::connection()->prepare(Avatar::getCoreSelect()
-                . ' ORDER BY a_id');
-        $query->execute();
-
-        $rows = $query->fetchAll();
+    public static function loop_many_rows($rows) {
         $avatars = array();
 
         $counter = -1234;
@@ -80,6 +116,33 @@ class Avatar extends BaseModel {
         return $avatars;
     }
 
+    public static function get_main_avatars($player_id) {
+        $query = DB::connection()->prepare(Avatar::getCoreSelect()
+                . ' WHERE Player.id = :id'
+                . ' AND Avatar.main = TRUE'
+                . ' ORDER BY a_id');
+        $query->execute(array('id' => $player_id));
+        $rows = $query->fetchAll();
+        return Avatar::loop_many_rows($rows);
+    }
+
+    public static function get_avatars_by_name($name) {
+        $query = DB::connection()->prepare(Avatar::getCoreSelect()
+                . ' WHERE Avatar.name = :name'
+                . ' ORDER BY a_id');
+        $query->execute(array('name' => $name));
+        $rows = $query->fetchAll();
+        return Avatar::loop_many_rows($rows);
+    }
+
+    public static function findAll() {
+        $query = DB::connection()->prepare(Avatar::getCoreSelect()
+                . ' ORDER BY a_id');
+        $query->execute();
+        $rows = $query->fetchAll();
+        return Avatar::loop_many_rows($rows);
+    }
+
     public static function findByPlayer($id) {
 
         $query = DB::connection()->prepare(Avatar::getCoreSelect()
@@ -87,20 +150,7 @@ class Avatar extends BaseModel {
                 . ' ORDER BY a_id');
         $query->execute(array('id' => $id));
         $rows = $query->fetchAll();
-        $avatars = array();
-
-        $counter = -1234;
-        $currentAvatar;
-        foreach ($rows as $row) {
-            if ($counter != $row['a_id']) {
-                $counter = $row['a_id'];
-
-                $currentAvatar = Avatar::extractData($row);
-                $avatars[] = $currentAvatar;
-            }
-            $currentAvatar->addOwnershipFromRow($row);
-        }
-        return $avatars;
+        return Avatar::loop_many_rows($rows);
     }
 
     public static function findById($id) {
@@ -124,18 +174,21 @@ class Avatar extends BaseModel {
         $query = DB::connection()->prepare('INSERT INTO Avatar '
                 . '(name, p_id, e_id, c_id, main, stats) VALUES '
                 . '(:name, :p_id, :e_id, :c_id, :main, :stats) RETURNING id');
+        
+        $main = 'FALSE';
+         if ($this->main) {
+             $main = 'TRUE';
+         } 
         $query->execute(array(
             'name' => $this->name,
-            'p_id' => $this->p_id,
-            'e_id' => $this->e_id,
-            'c_id' => $this->c_id,
-            'main' => $this->main,
+            'p_id' => $this->owner_id,
+            'e_id' => $this->element->id,
+            'c_id' => $this->clas->id,
+            'main' => $main,
             'stats' => $this->stats
         ));
 
         $row = $query->fetch();
-        Kint::trace();
-        Kint::dump($row);
         $this->id = $row['id'];
     }
 

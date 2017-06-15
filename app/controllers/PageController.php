@@ -29,16 +29,6 @@ class PageController extends BaseController {
         View::make('admin.html', $everything);
     }
 
-    public static function myPage($id) {
-        $player = Player::findById($id);
-        $items = Item::findAll();
-        $avatars = Avatar::findByPlayer($id);
-        $classes = Clas::all();
-        $elements = Element::all();
-        View::make('mypage.html', array('avatars' => $avatars, 'items' => $items,
-            'classes' => $classes, 'elements' => $elements, 'player' => $player));
-  }
-
     public static function characterPage($id) {
         $avatar = Avatar::findById($id);
         $items = Item::findAll();

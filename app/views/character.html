@@ -33,9 +33,9 @@
 
 
             {% if avatar.ownerships[item.id].owned %}           
-            <td><label class="label label-success">{{avatar.ownerships[item.id].i_id}}</label></td>
+            <td><label class="label label-success">owned</label></td>
                     {% else %} 
-                    <td><label class="label label-danger">{{avatar.ownerships[item.id].i_id}}</label></td>
+                    <td><label class="label label-danger">RIP</label></td>
                     {% endif %}
                     {% endfor %}
         </tr>
@@ -43,7 +43,7 @@
   </table>
   
    <img src="somewhere.jpg" alt="pitää selvittää miten linkitän kuvan toisesta sivustosta D:"> 
-   <p><a href="{{base_path}}/player/{{avatar.player.id}}">to my page</a></p>
+   <p><a href="{{base_path}}/player/{{avatar.owner_id}}">to my page</a></p>
    <p><a href="{{base_path}}/overview">to overview</a></p>
 
 {% endblock %}
