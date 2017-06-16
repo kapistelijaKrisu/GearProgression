@@ -41,6 +41,5 @@ CREATE TABLE Item(
 CREATE TABLE OwnerShip(
     a_id INTEGER REFERENCES Avatar(id) ON DELETE CASCADE,
     i_id INTEGER REFERENCES Item(id) ON DELETE CASCADE,
-    owned boolean NOT NULL,
     PRIMARY KEY(a_id, i_id)
 );

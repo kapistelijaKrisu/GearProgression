@@ -23,5 +23,5 @@ class BaseController {
             View::make('overview.html', array('message' => 'de fuc'));
         }
     }
-
+    
 }

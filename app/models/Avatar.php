@@ -56,18 +56,20 @@ class Avatar extends BaseModel {
 
     public function check_name_is_unique() {
         $errors = array();
-        if (sizeof(Avatar::get_avatars_by_name($this->name)) != 0) {
+        $avatar = Avatar::get_avatar_by_name($this->name);
+        if ($avatar != null) {
             $errors[] = 'Character name is already used!';
         }
         return $errors;
     }
 
     public function addOwnershipFromRow($row) {
-        $this->ownerships[$row['i_id']] = new Ownership(array(
-            'a_id' => $row['a_id'],
-            'i_id' => $row['i_id'],
-            'owned' => $row['owned']
+        $item = new Item(array(
+            'name' => $row['i_name'],
+            'id' => $row['i_id'],
         ));
+        $this->ownerships[$row['i_id']] = $item;
+ 
     }
 
     public static function extractData($row) {
@@ -91,15 +93,16 @@ class Avatar extends BaseModel {
                 . ' Player.id as p_id,'
                 . ' Clas.name as c_name,'
                 . ' Element.type as e_type,'
-                . ' Ownership.i_id,'
-                . ' Ownership.owned'
+                . ' Item.id as i_id,'
+                . ' Item.name as i_name'
                 . ' FROM Avatar LEFT JOIN Ownership ON Avatar.id = Ownership.a_id'
+                . ' LEFT JOIN Item ON Ownership.i_id = Item.id'
                 . ' LEFT JOIN Player ON Player.id = Avatar.p_id'
                 . ' LEFT JOIN Clas ON Clas.id = Avatar.c_id'
                 . ' LEFT JOIN Element ON Element.id = Avatar.e_id';
     }
 
-    public static function loop_many_rows($rows) {
+    public static function loop_many($rows) {
         $avatars = array();
 
         $counter = -1234;
@@ -116,6 +119,19 @@ class Avatar extends BaseModel {
         return $avatars;
     }
 
+    public static function loop_single($rows) {
+        $currentAvatar = null;
+        foreach ($rows as $row) {
+            if ($currentAvatar == null) {
+                $currentAvatar = Avatar::extractData($row);
+                $avatars[] = $currentAvatar;
+            }
+            $currentAvatar->addOwnershipFromRow($row);
+        }
+       
+        return $currentAvatar;
+    }
+
     public static function get_main_avatars($player_id) {
         $query = DB::connection()->prepare(Avatar::getCoreSelect()
                 . ' WHERE Player.id = :id'
@@ -123,16 +139,15 @@ class Avatar extends BaseModel {
                 . ' ORDER BY a_id');
         $query->execute(array('id' => $player_id));
         $rows = $query->fetchAll();
-        return Avatar::loop_many_rows($rows);
+        return Avatar::loop_many($rows);
     }
 
-    public static function get_avatars_by_name($name) {
+    public static function get_avatar_by_name($name) {
         $query = DB::connection()->prepare(Avatar::getCoreSelect()
-                . ' WHERE Avatar.name = :name'
-                . ' ORDER BY a_id');
+                . ' WHERE Avatar.name = :name');
         $query->execute(array('name' => $name));
         $rows = $query->fetchAll();
-        return Avatar::loop_many_rows($rows);
+        return Avatar::loop_single($rows);
     }
 
     public static function findAll() {
@@ -140,7 +155,7 @@ class Avatar extends BaseModel {
                 . ' ORDER BY a_id');
         $query->execute();
         $rows = $query->fetchAll();
-        return Avatar::loop_many_rows($rows);
+        return Avatar::loop_many($rows);
     }
 
     public static function findByPlayer($id) {
@@ -150,7 +165,7 @@ class Avatar extends BaseModel {
                 . ' ORDER BY a_id');
         $query->execute(array('id' => $id));
         $rows = $query->fetchAll();
-        return Avatar::loop_many_rows($rows);
+        return Avatar::loop_many($rows);
     }
 
     public static function findById($id) {
@@ -170,15 +185,15 @@ class Avatar extends BaseModel {
         return $currentAvatar;
     }
 
-    public function save() {
+    public function store() {
         $query = DB::connection()->prepare('INSERT INTO Avatar '
                 . '(name, p_id, e_id, c_id, main, stats) VALUES '
                 . '(:name, :p_id, :e_id, :c_id, :main, :stats) RETURNING id');
-        
+
         $main = 'FALSE';
-         if ($this->main) {
-             $main = 'TRUE';
-         } 
+        if ($this->main) {
+            $main = 'TRUE';
+        }
         $query->execute(array(
             'name' => $this->name,
             'p_id' => $this->owner_id,

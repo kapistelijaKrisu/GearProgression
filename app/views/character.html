@@ -32,18 +32,16 @@
             {% for item in items %}
 
 
-            {% if avatar.ownerships[item.id].owned %}           
+            {% if avatar.ownerships[item.id] %}           
             <td><label class="label label-success">owned</label></td>
-                    {% else %} 
-                    <td><label class="label label-danger">RIP</label></td>
-                    {% endif %}
-                    {% endfor %}
+            {% else %} 
+            <td><label class="label label-danger">RIP</label></td>
+            {% endif %}
+            {% endfor %}
         </tr>
     </tbody>
-  </table>
-  
-   <img src="somewhere.jpg" alt="pitää selvittää miten linkitän kuvan toisesta sivustosta D:"> 
-   <p><a href="{{base_path}}/player/{{avatar.owner_id}}">to my page</a></p>
-   <p><a href="{{base_path}}/overview">to overview</a></p>
+</table>
+
+<img src="somewhere.jpg" alt="pitää selvittää miten linkitän kuvan toisesta sivustosta D:"> 
 
 {% endblock %}

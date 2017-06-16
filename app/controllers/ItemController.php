@@ -1,12 +1,21 @@
 <?php
 
 class ItemController extends BaseController {
-    public static function store() {
-        $params = $_POST;
-        $item = new Item(array(
-            'name' => $params['name']
-        ));
-        Kint::dump($params);
-        $item->save();
+
+ 
+    public static function sandbox() {
+       
     }
+
+    public static function overview() {
+        $avatars = Avatar::findAll();
+        $items = Item::findAll();
+        $player = BaseController::get_user_logged_in();
+        View::make('overview.html', array('avatars' => $avatars, 'items' => $items, 'player' => $player));
+    }
+
+    
+
+    
+
 }

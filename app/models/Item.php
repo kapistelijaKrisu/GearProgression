@@ -4,20 +4,20 @@ class Item extends BaseModel {
 
     public $id, $name;
 
-    public function _construct($attributes) {
+    public function __construct($attributes) {
         parent::__construct($attributes);
 
         $this->validators = array(
-            'validate_string_length' => array('min' => 2, 'max' => 20, 'attribute' => 'name'),
-            'name_is_unique'
+            'validate_string_lengths' => array(array('min' => 2, 'max' => 20, 'attribute' => 'name')),
+            'check_name_is_unique',
         );
     }
 
-    public function name_is_unique() {
+    public function check_name_is_unique() {
         $errors = array();
         if ($this->name != null) {
             if (Item::findByName($this->name) != null) {
-                $errors[] = 'Player name already exists!';
+                $errors[] = 'Item with that name already exists!';
             }
         }
         return $errors;

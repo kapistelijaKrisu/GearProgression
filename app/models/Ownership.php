@@ -2,29 +2,13 @@
 
 class Ownership extends BaseModel {
 
-    public $a_id, $i_id, $owned;
+    public $a_id, $i_id;
 
     public function _construct($attributes) {
         parent::__construct($attributes);
 
         $this->validators = array(
-            'validate_references' => null,
-            'validate_not_null' => array('owner'));
-    }
-
-    public function validate_references() {
-        if (is_int($this->a_id) && is_int($this->i_id)) {
-            if (Ownership::findAvatarOwnerships($this->a_id) == null) {
-                $errors[] = 'This character id does not exist!';
-            }
-            if (Ownership::findAvatarOwnerships($this->i_id) == null) {
-                $errors[] = 'This item id does not exist!';
-            }
-            
-        } else {
-            $errors[] = 'ids have to be integer!';
-        }
-        return $errors;
+            'validate_value_is_int' => array('a_id','i_id'));
     }
 
     public static function findAvatarOwnerships($id) {
@@ -65,12 +49,12 @@ class Ownership extends BaseModel {
         return $ownerships;
     }
 
-    public function update() {
-        $query = DB::connection()->prepare('UPDATE Ownership SET owned = :toWhat WHERE p_id = :p_id AND a_id = :a_id');
+    public function store() {
+        $query = DB::connection()->prepare('INSERT INTO Ownership (a_id, i_id) VALUES (:a_id, :i_id)');
+
         $query->execute(array(
-            'toWhat' => $this->owned,
             'a_id' => $this->a_id,
-            'p_is' => $this->i_id
+            'i_id' => $this->i_id
         ));
     }
 

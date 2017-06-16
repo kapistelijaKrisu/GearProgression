@@ -8,16 +8,15 @@ class Element extends BaseModel {
         parent::__construct($attributes);
         
         $this->validators = array(
-            'validate_string_length' => array('min' => 2, 'max' => 20, 'attribute' => 'type'),
-            'type_is_unique');
+            'validate_string_lengths' => array(array('min' => 2, 'max' => 20, 'attribute' => 'type')),
+            'check_type_is_unique');
     }
     
-    public function type_is_unique() {
+    public function check_type_is_unique() {
         $errors = array();
-        if ($this->type != null) {
-            if (Element::findByType($this->type) != null) {
-                $errors[] = 'Player name already exists!';
-            }
+        $element = Element::findByType($this->type);
+        if ($element != null) {
+            $errors[] = 'Element name is already used!';
         }
         return $errors;
     }

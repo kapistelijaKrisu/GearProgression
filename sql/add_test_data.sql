@@ -30,29 +30,18 @@ INSERT INTO Avatar(p_id, e_id, c_id, name, main) VALUES(
 INSERT INTO Item(name) VALUES ('stick');
 INSERT INTO Item(name) VALUES ('mega stick');
 
-INSERT INTO Ownership(a_id, i_id, owned) VALUES(
+INSERT INTO Ownership(a_id, i_id) VALUES(
     (SELECT id FROM Avatar WHERE name='whale'),
-    (SELECT id FROM Item WHERE name='stick'),
-    TRUE);
-INSERT INTO Ownership(a_id, i_id, owned) VALUES(
-    (SELECT id FROM Avatar WHERE name='whale'),
-    (SELECT id FROM Item WHERE name='mega stick'),
-    TRUE);
+    (SELECT id FROM Item WHERE name='mega stick'));
 
-INSERT INTO Ownership(a_id, i_id, owned) VALUES(
+INSERT INTO Ownership(a_id, i_id) VALUES(
     (SELECT id FROM Avatar WHERE name='derp'),
-    (SELECT id FROM Item WHERE name='stick'),
-    FALSE);
-INSERT INTO Ownership(a_id, i_id, owned) VALUES(
+    (SELECT id FROM Item WHERE name='stick'));
+INSERT INTO Ownership(a_id, i_id) VALUES(
     (SELECT id FROM Avatar WHERE name='derp'),
-    (SELECT id FROM Item WHERE name='mega stick'),
-    TRUE);
+    (SELECT id FROM Item WHERE name='mega stick'));
 
-INSERT INTO Ownership(a_id, i_id, owned) VALUES(
+INSERT INTO Ownership(a_id, i_id) VALUES(
     (SELECT id FROM Avatar WHERE name='hajoon'),
-    (SELECT id FROM Item WHERE name='stick'),
-    TRUE);
-INSERT INTO Ownership(a_id, i_id, owned) VALUES(
-    (SELECT id FROM Avatar WHERE name='hajoon'),
-    (SELECT id FROM Item WHERE name='mega stick'),
-    FALSE);
+    (SELECT id FROM Item WHERE name='stick'));
+
