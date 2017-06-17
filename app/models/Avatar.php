@@ -2,6 +2,7 @@
 
 class Avatar extends BaseModel {
 
+    public static $maxCountPerNormalPlayer = 10;
     public $id, $owner_id, $element, $clas, $name, $main, $stats, $ownerships;
 
     public function __construct($attributes) {
@@ -10,28 +11,24 @@ class Avatar extends BaseModel {
         $this->validators = array(
             'validate_string_lengths' => array(
                 array('min' => 3, 'max' => 20, 'attribute' => 'name')),
-            'classes_are_correct' => array(
-                'Element' => 'element',
-                'Clas' => 'clas'),
             'validate_value_is_boolean' => 'main',
-            'check_name_is_unique',
-            'check_non_admin_main_avatar',
-            'check_non_admin_avatar_limit_count' => 10
+            'validate_values_are_int' => array('owner_id')
         );
     }
 
-    public function check_non_admin_avatar_limit_count($setLimit) {
+    // error check that technically are possible
+    public function check_non_admin_avatar_limit_count() {
         $errors = array();
         if (Player::findById($this->owner_id)->admin == true) {
             return $errors;
         }
         $avatars = Avatar::findByPlayer($this->owner_id);
-        if (sizeof($avatars) == $setLimit) {
+        if (sizeof($avatars) == Avatar::$maxCountPerNormalPlayer) {
             if ($this->id == null || Avatar::findById($this->id) == null) {
-                $errors[] = 'pleb can have only ' . $setLimit . ' characters!';
+                $errors[] = 'pleb can have only ' . Avatar::$maxCountPerNormalPlayer . ' characters!';
             }
-        } else if (sizeof($avatars) > $setLimit) {
-            $errors[] = 'how do u have more than ' . $setLimit . ' character(s) without admin rights!';
+        } else if (sizeof($avatars) > Avatar::$maxCountPerNormalPlayer) {
+            $errors[] = 'how do u have more than ' . Avatar::$maxCountPerNormalPlayer . ' character(s) without admin rights!';
         }
         return $errors;
     }
@@ -57,19 +54,20 @@ class Avatar extends BaseModel {
     public function check_name_is_unique() {
         $errors = array();
         $avatar = Avatar::get_avatar_by_name($this->name);
+        
         if ($avatar != null) {
             $errors[] = 'Character name is already used!';
         }
         return $errors;
     }
 
+    // database related from here
     public function addOwnershipFromRow($row) {
         $item = new Item(array(
             'name' => $row['i_name'],
             'id' => $row['i_id'],
         ));
         $this->ownerships[$row['i_id']] = $item;
- 
     }
 
     public static function extractData($row) {
@@ -128,7 +126,7 @@ class Avatar extends BaseModel {
             }
             $currentAvatar->addOwnershipFromRow($row);
         }
-       
+
         return $currentAvatar;
     }
 

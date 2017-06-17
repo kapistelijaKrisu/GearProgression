@@ -2,15 +2,8 @@
 
 class AdminController extends BaseController {
 
-    public static function adminCheck() {
-        $admin = $logged_in = parent::get_user_logged_in();
-        if ($admin == null || $admin->admin == false) {
-            Redirect::to('/overview', array('message' => 'De fuc?'));
-        }
-    }
-
-    public static function adminPage($error_map) {
-        AdminController::adminCheck();
+    public static function adminPage() {
+        parent::adminCheck();
         $everything = array(
             'player' => parent::get_user_logged_in(),
             'classes' => Clas::all(),
@@ -18,56 +11,58 @@ class AdminController extends BaseController {
             'items' => Item::findAll(),
             'players' => Player::findAll(),
             'avatars' => Avatar::findAll());
-
-        if (count($error_map != 0)) {
-            $everything = array_merge($everything, $error_map);
-        }
-
         View::make('admin.html', $everything);
     }
 
     public static function store_clas() {
-        AdminController::adminCheck();
+        parent::adminCheck();
         $clas = new Clas(array(
             'name' => $_POST['class']
         ));
 
         $errors = $clas->errors();
         if (sizeof($errors) == 0) {
-            $clas->save();
-            Redirect::to('/admin', array('message' => 'Class added!'));
-        } else {
-            Redirect::to('/admin', array('errors' => $errors, 'attributes' => array('clas' => $clas->name)));
+            $errors = array_merge($errors, $clas->check_name_is_unique());
+            if (sizeof($errors) == 0) {
+                $clas->save();
+                Redirect::to('/admin', array('message' => 'Class added!'));
+            }
         }
+        Redirect::to('/admin', array('errors' => $errors, 'attributes' => array('clas' => $clas->name)));
     }
 
     public static function delete_clas() {
-        AdminController::adminCheck();
+        parent::adminCheck();
+        parent::check_post_can_int('class', '/admin');
         $clas = Clas::findById($_POST['class']);
         if ($clas != null) {
             $clas->delete();
             Redirect::to('/admin', array('message' => 'Class deleted!'));
-        } else {
-            Redirect::to('/admin', array('errors' => array('Class does not exist!')));
         }
+        Redirect::to('/admin', array('errors' => array('Class does not exist!')));
     }
 
     public static function store_element() {
+        Kint::dump($_POST);
+        parent::adminCheck();
         $params = $_POST;
         $element = new Element(array(
             'type' => $params['element']
         ));
         $errors = $element->errors();
         if (sizeof($errors) == 0) {
-            $element->save();
-            Redirect::to('/admin', array('message' => 'Element added!'));
-        } else {
-            Redirect::to('/admin', array('errors' => $errors, 'attributes' => array('element' => $element->type)));
+            $errors = array_merge($errors, $element->check_type_is_unique());
+            if (sizeof($errors) == 0) {
+                $element->save();
+                Redirect::to('/admin', array('message' => 'Element added!'));
+            }
         }
+        Redirect::to('/admin', array('errors' => $errors));
     }
 
     public static function delete_element() {
-        AdminController::adminCheck();
+        parent::adminCheck();
+        parent::check_post_can_int('element', '/admin');
         $element = Element::findById($_POST['element']);
         if ($element != null) {
             $element->delete();
@@ -78,34 +73,35 @@ class AdminController extends BaseController {
     }
 
     public static function store_item() {
-        AdminController::adminCheck();
+        parent::adminCheck();
         $item = new Item(array(
             'name' => $_POST['item']
         ));
 
         $errors = $item->errors();
         if (sizeof($errors) == 0) {
-            $item->save();
-            Redirect::to('/admin', array('message' => 'Item added!'));
-        } else {
-            Redirect::to('/admin', array('errors' => $errors, 'attributes' => array('item' => $item->name)));
+            $errors = array_merge($errors, $item->check_name_is_unique());
+            if (sizeof($errors) == 0) {
+                $item->save();
+                Redirect::to('/admin', array('message' => 'Item added!'));
+            }
         }
+        Redirect::to('/admin', array('errors' => $errors, 'attributes' => array('item' => $item->name)));
     }
 
     public static function delete_item() {
-        AdminController::adminCheck();
+        parent::adminCheck();
+        parent::check_post_can_int('item', '/admin');
         $item = Item::findById($_POST['item']);
         if ($item != null) {
             $item->delete();
             Redirect::to('/admin', array('message' => 'Item deleted!'));
-        } else {
-            Redirect::to('/admin', array('errors' => array('Item does not exist!')));
         }
+        Redirect::to('/admin', array('errors' => array('Item does not exist!')));
     }
 
     public static function store_player() {//to admin
-        AdminController::adminCheck();
-        Kint::dump($_POST);
+        parent::adminCheck();
 
         $params = $_POST;
         $attributes = array(
@@ -115,19 +111,20 @@ class AdminController extends BaseController {
         );
         $player = new Player($attributes);
         $errors = $player->errors();
-        Kint::dump($player);
-        Kint::dump($errors);
-        if (count($errors) == 0) {
-            $player->store();
-            Redirect::to('/admin', array('message' => 'Player added. Tell the player default password is: "asd".'));
-        } else {
-            Redirect::to('/admin', array('errors' => $errors, 'player' => $attributes));
+
+        if (sizeof($errors) == 0) {
+            $errors = array_merge($errors, $player->check_name_is_unique());
+            if (count($errors) == 0) {
+                $player->store();
+                Redirect::to('/admin', array('message' => 'Player added. Tell the player default password is: "asd".'));
+            }
         }
+        Redirect::to('/admin', array('errors' => $errors, 'player' => $attributes));
     }
 
     public static function delete_player() {
-
-        AdminController::adminCheck();
+        parent::adminCheck();
+        parent::check_post_can_int('player', '/admin');
         $player = Player::findById($_POST['player']);
         if ($player == null) {
             Redirect::to('/admin', array('errors' => array('Player does not exist!')));
@@ -140,7 +137,8 @@ class AdminController extends BaseController {
     }
 
     public static function delete_character() {
-        AdminController::adminCheck();
+        parent::adminCheck();
+        parent::check_post_can_int('avatar', '/admin');
         $avatar = Avatar::findById($_POST['avatar']);
 
         if ($avatar == null) {
@@ -152,8 +150,7 @@ class AdminController extends BaseController {
     }
 
     public static function store_avatar() {
-        AdminController::adminCheck();
-        Kint::dump($_POST);
+        parent::adminCheck();
 
         $main = false;
         if ($_POST['priority'] == 'main') {
@@ -166,24 +163,31 @@ class AdminController extends BaseController {
             'clas' => Clas::findById($_POST['class']),
             'owner_id' => $_POST['player']
         );
-        
+
 
         $avatar = new Avatar($avatar_att);
         $errors = $avatar->errors();
+
         if (sizeof($errors) == 0) {
-            $avatar->store();
-            $items = Item::findAll();
-            $owned = array();
-            foreach ($items as $item) {
-                if (isset($_POST[$item->id])) {
-                    $toSave = new Ownership(array('a_id' => $avatar->id, 'i_id' => $item->id));
-                    $toSave->store();
+            $errors = array_merge($errors, $avatar->check_name_is_unique());
+            $errors = array_merge($errors, $avatar->check_non_admin_avatar_limit_count());
+            $errors = array_merge($errors, $avatar->check_non_admin_main_avatar());
+            if (sizeof($errors) == 0) {
+                $avatar->store();
+                $items = Item::findAll();
+
+                foreach ($items as $item) {
+
+                    if (isset($_POST[$item->id])) {
+                        parent::check_post_can_int($item->id, '/admin');
+                        $toSave = new Ownership(array('a_id' => $avatar->id, 'i_id' => $item->id));
+                        $toSave->store();
+                    }
                 }
+                Redirect::to('/admin', array('message' => 'Character created!'));
             }
-            Redirect::to('/admin', array('message' => 'Character deleted!'));
-        } else {
-            Redirect::to('/admin', array('errors' => array('Character does not exist!')));
         }
+        Redirect::to('/admin', array('errors' => $errors));
     }
 
 }

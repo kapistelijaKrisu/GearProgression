@@ -11,17 +11,44 @@ class BaseController {
         return null;
     }
 
+    public static function adminCheck() {
+        $admin = BaseController::get_user_logged_in();
+        if ($admin == null || $admin->admin == false) {
+            Redirect::to('/overview', array('message' => 'De fuc?'));
+        }
+    }
+
     public static function check_logged_in() {
         if (get_user_logged_in() == null) {
             View::make('login.html', array('error' => 'log in first please!'));
         }
     }
-    
+
     public static function check_admin() {
         $player = get_user_logged_in();
         if ($player == null || $player->admin == false) {
             View::make('overview.html', array('message' => 'de fuc'));
         }
     }
-    
+
+    public static function check_post_can_int($postIndex, $onFailRedirectTo) {
+        try {
+            if (isset($_POST[$postIndex])) {
+                (int) $_POST[$postIndex];
+            } else {
+                Redirect::to($onFailRedirectTo, array('errors' => array($postIndex . ' is in invalid format!')));
+            }
+        } catch (Exception $ex) {
+            Redirect::to($onFailRedirectTo, array('errors' => array($postIndex . ' is in invalid format!')));
+        }
+    }
+
+    public static function check_param_can_int($value, $onFailRedirectTo) {
+        try {
+            (int) $value;
+        } catch (Exception $ex) {
+            Redirect::to($onFailRedirectTo, array('errors' => array('value is in invalid format!')));
+        }
+    }
+
 }

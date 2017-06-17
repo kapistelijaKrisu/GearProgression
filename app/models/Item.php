@@ -8,8 +8,7 @@ class Item extends BaseModel {
         parent::__construct($attributes);
 
         $this->validators = array(
-            'validate_string_lengths' => array(array('min' => 2, 'max' => 20, 'attribute' => 'name')),
-            'check_name_is_unique',
+            'validate_string_lengths' => array(array('min' => 2, 'max' => 20, 'attribute' => 'name'))
         );
     }
 

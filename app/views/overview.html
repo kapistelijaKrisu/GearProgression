@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-{% import "macros/messages.html" as msg %}
 <h1>Status</h1>
 
+{% import "macros/messages.html" as msg %}
 {{msg.message("#{message}")}}
 {{msg.errors("#{errors}")}}
 
@@ -38,11 +38,32 @@
             <td><label class="label label-info">{{avatar.element.type}}</label></td>
             <td><label class="label label-info">{{avatar.clas.name}}</label></td> 
 
+            {% if player.admin == true %}
+            {% for item in items %}
+            {% if avatar.ownerships[item.id] %}    
+            <td><label class="label label-success">Owned</label>
+                <form method="post" action="{{base_path}}/overview/deleteItem/{{avatar.id}}">
 
+                    <button type="submit" name="item" value="{{item.id}}" class="btn-primary">Delete</button>
+                    </select>
 
+                </form></td>
+
+            {% else %}
+            <td><label class="label label-danger">RIP</label>
+                <form method="post" action="{{base_path}}/overview/addItem/{{avatar.id}}">
+
+                    <button type="submit" name="item" value="{{item.id}}" class="btn-primary">Add</button>
+                    </select>
+
+                </form></td>
+            {% endif %}
+
+            {% endfor %}
+
+            {% else %} 
 
             {% for item in items %}
-
 
             {% if avatar.ownerships[item.id] %}           
             <td><label class="label label-success">Owned</label></td>
@@ -50,7 +71,9 @@
             <td><label class="label label-danger">RIP</label></td>
             {% endif %}
             {% endfor %}
+            {% endif %}
         </tr>
+
 
         {% endfor %}
     </tbody>

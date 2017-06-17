@@ -20,20 +20,20 @@ class PlayerController extends BaseController {
         $player = Player::findById(parent::get_user_logged_in()->id);
 
         if ($player == null) {
-            Redirect::to('/overview', array('message' => 'De fuc?', 'player' => $player));
-        } else {
-            $player->name = $params['player_name'];
-            $errors = $player->errors();
+            Redirect::to('/overview', array('message' => 'not logged in?'));
+        }
+        $player->name = $params['player_name'];
+        $errors = $player->errors();
+        if (sizeof($errors) == 0) {
+            array_merge($errors, $player->check_name_is_unique());
             if (sizeof($errors) == 0) {
+
                 $player->rename();
-
-                Redirect::to('/player/' . $player->id, array('errors' => array('lel uncaught error ' . sizeof($errors))));
-            } else {
-                $att = array('playerName' => $player->name);
-
-                Redirect::to('/player/' . $player->id, array('errors' => $errors, 'attributes' => $att));
+                Redirect::to('/player/' . $player->id, array('message' => 'You have renamed yourself!'));
             }
         }
+        $att = array('playerName' => $player->name);
+        Redirect::to('/player/' . $player->id, array('errors' => $errors, 'attributes' => $att));
     }
 
     public static function changePassword() {
@@ -42,17 +42,16 @@ class PlayerController extends BaseController {
 
         if ($player == null) {
             Redirect::to('/overview', array('message' => 'De fuc?', 'player' => $player));
+        }
+        $player->password = $params['player_pass'];
+        $errors = $player->errors();
+        if (sizeof($errors) == 0) {
+            $player->passwordChange();
+            Redirect::to('/player/' . $player->id, array('message' => 'Password change succesful!'));
         } else {
-            $player->password = $params['player_pass'];
-            $errors = $player->errors();
-            if (sizeof($errors) == 0) {
-                $player->passwordChange();
-                Redirect::to('/player/' . $player->id, array('message' => 'Password change succesful!'));
-            } else {
-                $att = array('playerName' => $player->name);
+            $att = array('playerName' => $player->name);
 
-                Redirect::to('/player/' . $player->id, array('errors' => $errors, 'attributes' => $att));
-            }
+            Redirect::to('/player/' . $player->id, array('errors' => $errors, 'attributes' => $att));
         }
     }
 
@@ -60,40 +59,42 @@ class PlayerController extends BaseController {
         $params = $_SESSION;
         $player = Player::findById($params['player']);
 
-        if ($player == null && $player->admin == false) {
-            Redirect::to('/overview', array('message' => 'De fuc?'));
-        } else {
-
-            $player->delete();
-            $_SESSION['player'] = null;
-            Redirect::to('/overview', array('message' => 'ciao!'));
+        if ($player == null) {
+            Redirect::to('/overview', array('errors' => 'How can you delete yourself when you do not exist?'));
+        } else if ($player->admin == true) {
+            Redirect::to('/player/' . $player->id, array('errors' => 'Admins are stuck here forever!'));
         }
+
+        $player->delete();
+        $_SESSION['player'] = null;
+        Redirect::to('/overview', array('message' => 'Ciao!'));
     }
 
     public static function renameOwnedChar($p_id, $a_id) {
         $logged_in = parent::get_user_logged_in();
         if ($logged_in == null || $logged_in->id != $p_id) {
-            Redirect::to('/overview', array('message' => 'De fuc?'));
+            Redirect::to('/overview', array('message' => 'Not yours!'));
         }
         $avatar = Avatar::findById($a_id);
         if ($avatar == null) {
             Redirect::to('/player/' . $p_id, array('errors' => 'Character does not exist!'));
         }
         if ($avatar->owner_id != $logged_in->id) {
-            Redirect::to('/overview', array('message' => 'De fuc?'));
+            Redirect::to('/overview', array('message' => 'De yours!'));
         }
 
         $avatar->name = $_POST['avatar_name'];
         $errors = $avatar->errors();
 
         if (sizeof($errors) == 0) {
-            $avatar->changeName();
-            Redirect::to('/player/' . $p_id, array('message' => 'Character rename succesful!'));
-        } else {
-            $att = array($avatar->id => $avatar->name);
-
-            Redirect::to('/player/' . $logged_in->id, array('errors' => $errors, 'attributes' => $att));
+            $errors = array_merge($errors, $avatar->check_name_is_unique());
+            if (sizeof($errors) == 0) {
+                $avatar->changeName();
+                Redirect::to('/player/' . $p_id, array('message' => 'Character rename succesful!'));
+            }
         }
+        $att = array($avatar->id => $avatar->name);
+        Redirect::to('/player/' . $logged_in->id, array('errors' => $errors, 'attributes' => $att));
     }
 
     public static function create_character_to_self() {
@@ -114,25 +115,26 @@ class PlayerController extends BaseController {
             'owner_id' => $logged_in->id,
         );
 
-
-
         $avatar = new Avatar($attributes);
         $errors = $avatar->errors();
         if (sizeof($errors) == 0) {
-            $avatar->store();
-            $items = Item::findAll();
-            $owned = array();
-            foreach ($items as $item) {
-                if (isset($_POST[$item->id])) {
-                    $toSave = new Ownership(array('a_id' => $avatar->id, 'i_id' => $item->id));
-                    $toSave->store();
+            $errors = array_merge($errors, $avatar->check_name_is_unique());
+            $errors = array_merge($errors, $avatar->check_non_admin_avatar_limit_count());
+
+            if (sizeof($errors) == 0) {
+                $avatar->store();
+                $items = Item::findAll();
+
+                foreach ($items as $item) {
+                    if (isset($_POST[$item->id])) {
+                        $toSave = new Ownership(array('a_id' => $avatar->id, 'i_id' => $item->id));
+                        $toSave->store();
+                        Redirect::to('/player/' . $logged_in->id, array('message' => 'Character has been listed!'));
+                        return;
+                    }
                 }
             }
-
-            Redirect::to('/player/' . $logged_in->id, array('message' => 'Character has been listed!'));
-        } else {
             $att = array(); //$avatar->id => $avatar->name);
-
             Redirect::to('/player/' . $logged_in->id, array('errors' => $errors, 'attributes' => $att));
         }
     }

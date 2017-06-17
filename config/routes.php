@@ -11,16 +11,10 @@ $routes->get('/logout', function() {
     LoginController::handle_logout();
 });
 $routes->get('/overview', function() {
-    ItemController::overview();//checkbox items for admin
+    ItemController::overview();
 });
 $routes->get('/admin', function() {
-    $player = BaseController::get_user_logged_in();
-    if ($player != null && $player->admin) {
-        AdminController::adminPage(array());
-        
-    }else {
-    Redirect::to('/overview', array('errors' => array('sneaky')));
-    }
+    AdminController::adminPage();
 });
 $routes->get('/player/:id', function($id) {
     PlayerController::myPage($id);
@@ -31,8 +25,24 @@ $routes->post('/login', function() {
 });
 
 $routes->get('/character/:id', function($id) {
-    AvatarController::characterPage($id);//checkbox items
+    AvatarController::characterPage($id);
 });
+//posts begin here
+
+
+
+$routes->post('/overview/addItem/:id', function($character_id) {
+    ItemController::addItem($character_id); //checkbox items for admin
+});
+
+$routes->post('/overview/deleteItem/:id', function($character_id) {
+    ItemController::deleteItem($character_id); //checkbox items for admin
+});
+
+$routes->post('/character/:id/addItem', function($character) {
+    AvatarController::addItem($character);
+});
+
 
 
 
@@ -54,8 +64,6 @@ $routes->post('/player/:id/rename', function() {
 $routes->post('/player/:id/password', function() {
     PlayerController::changePassword();
 });
-
-
 
 
 

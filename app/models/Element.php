@@ -8,8 +8,8 @@ class Element extends BaseModel {
         parent::__construct($attributes);
         
         $this->validators = array(
-            'validate_string_lengths' => array(array('min' => 2, 'max' => 20, 'attribute' => 'type')),
-            'check_type_is_unique');
+            'validate_string_lengths' => array(array('min' => 2, 'max' => 20, 'attribute' => 'type'))
+            );
     }
     
     public function check_type_is_unique() {

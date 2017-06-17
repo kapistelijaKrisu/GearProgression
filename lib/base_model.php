@@ -59,7 +59,7 @@ class BaseModel {
         return $errors;
     }
 
-    public function classes_are_correct($evaluated) {
+    public function check_classes_are_correct($evaluated) {
         $errors = array();
         foreach ($evaluated as $desired_class_name => $param_name) {
             if ($desired_class_name == null || is_string($desired_class_name) == false) {
@@ -73,14 +73,17 @@ class BaseModel {
         return $errors;
     }
 
-    public function validate_value_is_int($nameArr) {
+    public function validate_values_are_int($nameArr) {
         $errors = array();
-        foreach ($nameArr as $asName) {
-            $param = $this->{$asName};
-            if ($param == null || is_int($param) == false) {
-                $errors[] = 'value has to be integer!';
+        try {
+            foreach ($nameArr as $asName) {
+                $param = $this->{$asName};
+                (int)$param;
             }
+        } catch (Exception $ex) {
+            $errors[] = 'value has to be integer!';
         }
+
         return $errors;
     }
 

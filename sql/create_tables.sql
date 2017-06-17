@@ -17,7 +17,7 @@ CREATE TABLE Clas(
 CREATE TABLE Player(
     id SERIAL PRIMARY KEY,
     name character varying(20) NOT NULL UNIQUE,
-    password character varying(20) NOT NULL UNIQUE,
+    password character varying(20) NOT NULL,
     admin boolean NOT NULL
 );
 
@@ -27,9 +27,7 @@ CREATE TABLE Avatar(
     e_id INTEGER REFERENCES Element(id) ON DELETE CASCADE NOT NULL,
     c_id INTEGER REFERENCES clas(id) NOT NULL,
     name character varying(20) NOT NULL UNIQUE,
-    main boolean NOT NULL,
-    stats cidr 
---/*NOT NULL UNIQUE  pitää tutkia enemmän lähdettä
+    main boolean NOT NULL
 
 );
 
