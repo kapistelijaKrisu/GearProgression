@@ -1,12 +1,51 @@
 <?php
 
-class ItemController extends BaseController {
+class OverviewController extends BaseController {
 
-    public static function overview() {
-        $avatars = Avatar::findAll();
+    public static function list_characters_by_category($category_name, $category_value) {
+
+        $category_name = OverviewController::inspectName($category_name);
+        $category_value = OverviewController::inspectValue($category_name, $category_value);
+        parent::check_param_can_int($page, '/home');
+
+        $avatars = Avatar::all(array('category' => $category_name, 'category_value' => $category_value));
         $items = Item::findAll();
         $player = BaseController::get_user_logged_in();
         View::make('overview.html', array('avatars' => $avatars, 'items' => $items, 'player' => $player));
+    }
+    
+    public static function list_characters() {
+       
+        $avatars = Avatar::all(array());
+        $items = Item::findAll();
+        $player = BaseController::get_user_logged_in();
+        View::make('overview.html', array('avatars' => $avatars, 'items' => $items, 'player' => $player));
+    }
+
+    public static function inspectName($name) {
+        if ($name == 'main') {
+            return 'Avatar.main =';
+        } else if ($name == 'Clas' || $name == 'Element') {
+            return $name.'.id =';
+        } else if ($name == 'Item') {
+            return $name.'.id !=';
+        }
+        Redirect::to('/home', array('errors' => 'invalid search values for characters'));
+    }
+
+    public static function inspectValue($name, $value) {
+        if ($name == 'Avatar.main =') {
+            if ($value == 1) {
+                return 'TRUE';
+            } else {
+                return 'FALSE';
+            }
+        } else if ($name == 'Clas.id =' || $name == 'Element.id =' || $name == 'Item.id !=') {
+            parent::check_param_can_int($value, '/home');
+            return $value;
+        } else {
+            Redirect::to('/home', array('errors' => 'invalid search values for characters'));
+        }
     }
 
     public static function addItem($id) {

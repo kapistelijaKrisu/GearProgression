@@ -54,7 +54,7 @@ class Avatar extends BaseModel {
     public function check_name_is_unique() {
         $errors = array();
         $avatar = Avatar::get_avatar_by_name($this->name);
-        
+
         if ($avatar != null) {
             $errors[] = 'Character name is already used!';
         }
@@ -79,14 +79,13 @@ class Avatar extends BaseModel {
             'clas' => $clas,
             'element' => $ele,
             'name' => $row['name'],
-            'main' => $row['main'],
-            'stats' => $row['stats']));
+            'main' => $row['main']));
         return $avatar;
     }
 
     public static function getCoreSelect() {
         return 'SELECT'
-                . ' Avatar.id as a_id, Avatar.name, Avatar.stats, Avatar.main,'
+                . ' Avatar.id as a_id, Avatar.name, Avatar.main,'
                 . ' Avatar.c_id, Avatar.e_id,'
                 . ' Player.id as p_id,'
                 . ' Clas.name as c_name,'
@@ -148,10 +147,22 @@ class Avatar extends BaseModel {
         return Avatar::loop_single($rows);
     }
 
-    public static function findAll() {
-        $query = DB::connection()->prepare(Avatar::getCoreSelect()
-                . ' ORDER BY a_id');
-        $query->execute();
+    public static function all($options) {
+
+        if (isset($options['category']) && isset($options['category_value'])) {
+            $category_col = $options['category'];
+            $category_value = $options['category_value'];
+
+            $query = DB::connection()->prepare(Avatar::getCoreSelect()
+                    . ' WHERE ' . $category_col . ' :id ORDER BY Avatar.name, a_id');
+            $query->execute(array(
+                'id' => $category_value
+            ));
+        } else {
+            $query = DB::connection()->prepare(Avatar::getCoreSelect()
+                    . ' ORDER BY Avatar.name, a_id');
+            $query->execute();
+        }
         $rows = $query->fetchAll();
         return Avatar::loop_many($rows);
     }
@@ -185,8 +196,8 @@ class Avatar extends BaseModel {
 
     public function store() {
         $query = DB::connection()->prepare('INSERT INTO Avatar '
-                . '(name, p_id, e_id, c_id, main, stats) VALUES '
-                . '(:name, :p_id, :e_id, :c_id, :main, :stats) RETURNING id');
+                . '(name, p_id, e_id, c_id, main) VALUES '
+                . '(:name, :p_id, :e_id, :c_id, :main) RETURNING id');
 
         $main = 'FALSE';
         if ($this->main) {
@@ -197,8 +208,7 @@ class Avatar extends BaseModel {
             'p_id' => $this->owner_id,
             'e_id' => $this->element->id,
             'c_id' => $this->clas->id,
-            'main' => $main,
-            'stats' => $this->stats
+            'main' => $main
         ));
 
         $row = $query->fetch();

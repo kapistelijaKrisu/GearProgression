@@ -10,7 +10,7 @@ class AdminController extends BaseController {
             'elements' => Element::all(),
             'items' => Item::findAll(),
             'players' => Player::findAll(),
-            'avatars' => Avatar::findAll());
+            'avatars' => Avatar::all(array()));
         View::make('admin.html', $everything);
     }
 

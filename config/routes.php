@@ -1,7 +1,10 @@
 <?php
 
 $routes->get('/', function() {
-    Redirect::to('/overview');
+    Redirect::to('/home');
+});
+$routes->get('/home', function() {
+    HomeController::home();
 });
 
 $routes->get('/login', function() {
@@ -10,8 +13,8 @@ $routes->get('/login', function() {
 $routes->get('/logout', function() {
     LoginController::handle_logout();
 });
-$routes->get('/overview', function() {
-    ItemController::overview();
+$routes->get('/overview/', function() {
+    OverviewController::list_characters();
 });
 $routes->get('/admin', function() {
     AdminController::adminPage();
@@ -20,23 +23,24 @@ $routes->get('/player/:id', function($id) {
     PlayerController::myPage($id);
 });
 
+$routes->get('/character/:id', function($id) {
+    AvatarController::characterPage($id);
+});
+$routes->get('/:category/:name', function($category, $name) {
+    OverviewController::list_characters_by_category($category, $name);
+});
+//posts begin here
+
 $routes->post('/login', function() {
     LoginController::handle_login();
 });
 
-$routes->get('/character/:id', function($id) {
-    AvatarController::characterPage($id);
-});
-//posts begin here
-
-
-
 $routes->post('/overview/addItem/:id', function($character_id) {
-    ItemController::addItem($character_id); //checkbox items for admin
+    OverviewController::addItem($character_id); //checkbox items for admin
 });
 
 $routes->post('/overview/deleteItem/:id', function($character_id) {
-    ItemController::deleteItem($character_id); //checkbox items for admin
+    OverviewController::deleteItem($character_id); //checkbox items for admin
 });
 
 $routes->post('/character/:id/addItem', function($character) {

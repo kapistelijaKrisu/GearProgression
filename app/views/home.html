@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Home Page</h1><bR>
+{% import "macros/messages.html" as msg %}
+{{msg.message("#{message}")}}
+{{msg.errors("#{errors}")}}
+
+<div class="form-group">
+    <form method="post" action="{{base_path}}/home/find">
+        <label>View character</label>
+        <input type="text" name="character" class="form-group"> 
+        <button type="submit" class="btn btn-info">Visit</button>        
+    </form>
+</div>
+
+
+
+
+{% import "macros/messages.html" as msg %}
+{% import "macros/tables.html" as tbl %}
+{{msg.message("#{message}")}}
+{{msg.errors("#{errors}")}}
+
+<h2>Search by Category</h2><br>
+
+<div class="row">
+    <div class="col-md-3 offest-md-1">
+        <!--   (title, link_path, content, param_name) %}-->
+        {{tbl.array_link_types("Element", "Element", elements)}}
+    </div>
+    <div class="col-md-3 offest-md-1">
+        {{tbl.array_link_names("Missing items", "Item", items)}}
+    </div>
+    <div class="col-md-3 offest-md-1">
+        {{tbl.array_link_names("Class", "Clas", classes)}}
+    </div>
+    
+    <div class="col-md-3 offest-md-1">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        <p class="d-inline">Priority</p>
+                    </th>
+                </tr>                      
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href="{{base_path}}/main/1/1">main</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td><a href="{{base_path}}/main/0/1">alt</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

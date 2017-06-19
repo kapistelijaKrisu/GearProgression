@@ -1,0 +1,42 @@
+{% macro array_link_types(title, link_path, content_array) %}
+<table class="table">
+    <thead>
+        <tr>
+            <th><p class="d-inline">{{title}}</p>
+            </th>
+        </tr>                      
+    </thead>
+    <tbody>
+        {% for var in content_array %}
+
+        <tr>
+            <td>
+                <a href="{{base_path}}/GearProgression/{{link_path}}/{{var.id}}/1">{{var.type}}</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endmacro %}
+
+
+{% macro array_link_names(title, link_path, content_array) %}
+<table class="table">
+    <thead>
+        <tr>
+            <th><p class="d-inline">{{title}}</p>
+            </th>
+        </tr>                      
+    </thead>
+    <tbody>
+        {% for var in content_array %}
+
+        <tr>
+            <td>
+                <a href="{{base_path}}/GearProgression/{{link_path}}/{{var.id}}/1">{{var.name}}</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endmacro %}
