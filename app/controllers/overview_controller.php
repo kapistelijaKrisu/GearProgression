@@ -60,7 +60,7 @@ class OverviewController extends BaseController {
     }
 
     public static function addItem($id) {
-        parent::adminCheck();
+        parent::kick_non_admin();
         parent::check_param_can_int($id, '/overview');
 
         $avatar = Avatar::findById($id);
@@ -88,7 +88,7 @@ class OverviewController extends BaseController {
     }
 
     public static function deleteItem($c_id) {
-        parent::adminCheck();
+        parent::kick_non_admin();
         parent::check_param_can_int($c_id, '/overview');
         parent::check_post_can_int('item', '/overview');
 

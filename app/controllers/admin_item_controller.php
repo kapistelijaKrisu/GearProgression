@@ -3,19 +3,17 @@
 class AdminConfigController extends BaseController {
 
     public static function adminPage() {
-        parent::adminCheck();
-        $everything = array(
+        parent::kick_non_admin();
+        $data = array(
             'player' => parent::get_user_logged_in(),
             'classes' => Clas::all(),
             'elements' => Element::all(),
-            'items' => Item::findAll(),
-            'players' => Player::findAll(),
-            'avatars' => Avatar::all(array()));
-        View::make('admin_config.html', $everything);
+            'items' => Item::findAll());
+        View::make('admin_config.html', $data);
     }
 
     public static function store_clas() {
-        parent::adminCheck();
+        parent::kick_non_admin();
         $clas = new Clas(array(
             'name' => $_POST['class']
         ));
@@ -32,7 +30,7 @@ class AdminConfigController extends BaseController {
     }
 
     public static function delete_clas() {
-        parent::adminCheck();
+        parent::kick_non_admin();
         parent::check_post_can_int('class', '/admin/config');
         $clas = Clas::findById($_POST['class']);
         if ($clas != null) {
@@ -44,14 +42,14 @@ class AdminConfigController extends BaseController {
 
     public static function store_element() {
         Kint::dump($_POST);
-        parent::adminCheck();
+        parent::kick_non_admin();
         $params = $_POST;
         $element = new Element(array(
-            'type' => $params['element']
+            'name' => $params['element']
         ));
         $errors = $element->errors();
         if (sizeof($errors) == 0) {
-            $errors = array_merge($errors, $element->check_type_is_unique());
+            $errors = array_merge($errors, $element->check_name_is_unique());
             if (sizeof($errors) == 0) {
                 $element->save();
                 Redirect::to('/admin/config', array('message' => 'Element added!'));
@@ -61,7 +59,7 @@ class AdminConfigController extends BaseController {
     }
 
     public static function delete_element() {
-        parent::adminCheck();
+        parent::kick_non_admin();
         parent::check_post_can_int('element', '/admin/config');
         $element = Element::findById($_POST['element']);
         if ($element != null) {
@@ -73,7 +71,7 @@ class AdminConfigController extends BaseController {
     }
 
     public static function store_item() {
-        parent::adminCheck();
+        parent::kick_non_admin();
         $item = new Item(array(
             'name' => $_POST['item']
         ));
@@ -90,7 +88,7 @@ class AdminConfigController extends BaseController {
     }
 
     public static function delete_item() {
-        parent::adminCheck();
+        parent::kick_non_admin();
         parent::check_post_can_int('item', '/admin/config');
         $item = Item::findById($_POST['item']);
         if ($item != null) {

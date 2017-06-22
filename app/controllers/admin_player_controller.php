@@ -5,7 +5,7 @@
 class AdminPlayerController extends BaseController {
     
     public static function adminPage() {
-        parent::adminCheck();
+        parent::kick_non_admin();
         $data = array(
             'player' => parent::get_user_logged_in(),
             'players' => Player::findAll());
@@ -13,7 +13,7 @@ class AdminPlayerController extends BaseController {
     }
     
    public static function store_player() {//to admin
-        parent::adminCheck();
+        parent::kick_non_admin();
 
         $params = $_POST;
         $attributes = array(
@@ -35,7 +35,7 @@ class AdminPlayerController extends BaseController {
     }
 
     public static function mod_player() {
-        parent::adminCheck();
+        parent::kick_non_admin();
         parent::check_post_can_int('player', '/admin/player');
         if (isset($_POST['mod'])) {
             if ($_POST['mod'] == 'delete') {

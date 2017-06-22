@@ -9,7 +9,7 @@ class Avatar extends BaseModel {
             . ' Avatar.c_id, Avatar.e_id,'
             . ' Avatar.p_id,'
             . ' Clas.name as c_name,'
-            . ' Element.type as e_type,'
+            . ' Element.name as e_name,'
             . ' Item.id as i_id,'
             . ' Item.name as i_name'
             . ' FROM Avatar LEFT JOIN Ownership ON Avatar.id = Ownership.a_id'
@@ -86,7 +86,7 @@ class Avatar extends BaseModel {
     }
 
     public static function extractAvatar($row) {
-        $ele = new Element(array('id' => $row['e_id'], 'type' => $row['e_type']));
+        $ele = new Element(array('id' => $row['e_id'], 'name' => $row['e_name']));
         $clas = new Clas(array('id' => $row['c_id'], 'name' => $row['c_name']));
         $avatar = new Avatar(array(
             'id' => $row['id'],
@@ -128,7 +128,7 @@ class Avatar extends BaseModel {
 
     public static function get_main_avatars($player_id) {
         $query = DB::connection()->prepare(Avatar::SELECT_START_PART_PSQL
-                . ' WHERE Player.id = :id'
+                . ' WHERE Avatar.p_id = :id'
                 . ' AND Avatar.main = TRUE'
                 . Avatar::ORDER_BY_PSQL);
         $query->execute(array('id' => $player_id));

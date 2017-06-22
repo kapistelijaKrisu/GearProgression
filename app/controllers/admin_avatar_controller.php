@@ -1,9 +1,9 @@
 <?php
 
-
 class AdminAvatarController extends BaseController {
+
     public static function adminPage() {
-        parent::adminCheck();
+        parent::kick_non_admin();
         $everything = array(
             'player' => parent::get_user_logged_in(),
             'classes' => Clas::all(),
@@ -13,28 +13,12 @@ class AdminAvatarController extends BaseController {
             'avatars' => Avatar::all(array()));
         View::make('admin_avatar.html', $everything);
     }
-    public static function delete() {
-        parent::adminCheck();
-        parent::check_post_can_int('avatar', '/admin/character');
-        
-        if (isset($_POST['delete'])) {
-            if ($_POST['delete'] == 'player') {
-                self::delete_player();
-            }else if ($_POST['delete'] == 'character') {
-                self::delete_character();
-            } else {
-                Redirect::to('/admin/character', array('errors' => 'This mod value is not registered!'));
-            }
-        } else {
-            Redirect::to('/admin/character', array('errors' => 'Missing mod value from post'));
-        }
-        
-       
-    }
-    
-    private static function delete_character() {
-         $avatar = Avatar::findById($_POST['avatar']);
 
+    public static function delete() {
+        parent::kick_non_admin();
+        parent::check_post_can_int('avatar', '/admin/character');
+
+        $avatar = Avatar::findById($_POST['avatar']);
         if ($avatar == null) {
             Redirect::to('/admin/character', array('errors' => array('Character does not exist!')));
         } else {
@@ -42,23 +26,9 @@ class AdminAvatarController extends BaseController {
             Redirect::to('/admin/character', array('message' => 'Character deleted!'));
         }
     }
-    
-    private static function delete_player() {
-         $player = Player::findById(Avatar::findById($_POST['avatar'])->owner_id);
-
-        if ($player == null) {
-            Kint::dump($player, $_POST);
-            Redirect::to('/admin/character', array('errors' => array('Character does not exist!')));
-        } else if ($player->admin) {
-            Redirect::to('/admin/character', array('message' => 'Admins will stay forever!'));
-        } else {
-            $avatar->delete();
-            Redirect::to('/admin/character', array('message' => 'Character deleted!'));
-        }
-    }
 
     public static function store_avatar() {
-        parent::adminCheck();
+        parent::kick_non_admin();
 
         $main = false;
         if ($_POST['priority'] == 'main') {

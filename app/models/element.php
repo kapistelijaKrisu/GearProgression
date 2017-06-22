@@ -2,19 +2,19 @@
 
 class Element extends BaseModel {
 
-    public $id, $type;
+    public $id, $name;
 
     public function __construct($attributes) {
         parent::__construct($attributes);
         
         $this->validators = array(
-            'validate_string_lengths' => array(array('min' => 2, 'max' => 20, 'attribute' => 'type'))
+            'validate_string_lengths' => array(array('min' => 2, 'max' => 20, 'attribute' => 'name'))
             );
     }
     
-    public function check_type_is_unique() {
+    public function check_name_is_unique() {
         $errors = array();
-        $element = Element::findByType($this->type);
+        $element = Element::findByName($this->name);
         if ($element != null) {
             $errors[] = 'Element name is already used!';
         }
@@ -29,7 +29,7 @@ class Element extends BaseModel {
         if ($row) {
             $element = new Element(array(
                 'id' => $row['id'],
-                'type' => $row['type'],
+                'name' => $row['name'],
             ));
 
             return $element;
@@ -38,15 +38,15 @@ class Element extends BaseModel {
         return null;
     }
     
-    public static function findByType($type) {
-        $query = DB::connection()->prepare('SELECT * FROM Element WHERE type = :type LIMIT 1');
-        $query->execute(array('type' => $type));
+    public static function findByName($name) {
+        $query = DB::connection()->prepare('SELECT * FROM Element WHERE name = :name LIMIT 1');
+        $query->execute(array('name' => $name));
         $row = $query->fetch();
 
         if ($row) {
             $element = new Element(array(
                 'id' => $row['id'],
-                'type' => $row['type'],
+                'name' => $row['name'],
             ));
 
             return $element;
@@ -69,7 +69,7 @@ class Element extends BaseModel {
             // Tämä on PHP:n hassu syntaksi alkion lisäämiseksi taulukkoon :)
             $elements[] = new Element(array(
                 'id' => $row['id'],
-                'type' => $row['type'],
+                'name' => $row['name'],
                             ));
         }
 
@@ -77,14 +77,16 @@ class Element extends BaseModel {
     }
     
     public function save() {
-        $query = DB::connection()->prepare('INSERT INTO Element (type) VALUES (:type) RETURNING id');
-        $query->execute(array('type' => $this->type));
+        $query = DB::connection()->prepare('INSERT INTO Element (name) VALUES (:name) RETURNING id');
+        $query->execute(array('name' => $this->name));
         $row = $query->fetch();
         $this->id = $row['id'];
     }
 
     public function delete() {
-        $query = DB::connection()->prepare('DELETE FROM Element WHERE id = :id;');
+        $query = DB::connection()->prepare('DELETE FROM Element WHERE id = :id RETURNING id');
         $query->execute(array('id' => $this->id));
+        $row = $query->fetch();
+        return $row['id'];
     }
 }

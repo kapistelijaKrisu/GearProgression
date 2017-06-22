@@ -95,25 +95,31 @@ class Player extends BaseModel {
     }
 
     public function rename() {
-        $query = DB::connection()->prepare('UPDATE Player SET name = :toWhat WHERE id = :id;');
+        $query = DB::connection()->prepare('UPDATE Player SET name = :toWhat WHERE id = :id RETURNING id;');
         $query->execute(array(
             'toWhat' => $this->name,
             'id' => $this->id
         ));
+        $row = $query->fetch();
+        return $row['id'];
     }
 
     public function passwordChange() {
-        $query = DB::connection()->prepare('UPDATE Player SET password = :toWhat WHERE id = :id;');
+        $query = DB::connection()->prepare('UPDATE Player SET password = :toWhat WHERE id = :id RETURNING id');
         $query->execute(array(
             'toWhat' => $this->password,
             'id' => $this->id
         ));
+        $row = $query->fetch();
+        return $row['id'];
     }
 
     public function delete() {
-        $query = DB::connection()->prepare('DELETE FROM Player WHERE id = :id;');
+        $query = DB::connection()->prepare('DELETE FROM Player WHERE id = :id RETURNING id');
         $query->execute(array('id' => $this->id
         ));
+        $row = $query->fetch();
+        return $row['id'];
     }
 
 }

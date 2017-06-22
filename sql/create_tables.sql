@@ -1,12 +1,8 @@
 -- Lisää CREATE TABLE lauseet tähän tiedostoon
 
---kysy näiden käytöstä.
---CREATE TYPE element AS ENUM ('fire', 'ice', 'shadow');
---CREATE TYPE class AS ENUM ('asd', 'wololo', 'tab tab');
-
 CREATE TABLE Element(
     id SERIAL PRIMARY KEY,
-    type character varying(20) NOT NULL UNIQUE
+    name character varying(20) NOT NULL UNIQUE
 );
 
 CREATE TABLE Clas(

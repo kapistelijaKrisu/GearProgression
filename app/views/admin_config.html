@@ -57,7 +57,7 @@
                 {% for ele in elements %}
                 <tr>
 
-                    <td><a>{{ele.type}}</a></td>
+                    <td><a>{{ele.name}}</a></td>
                     <td><form method="post" action="{{base_path}}/admin/delEle">        
                             <button type="submit" value="{{ele.id}}" name="element" class="btn btn-danger">
                                 Delete</button></form></td>   

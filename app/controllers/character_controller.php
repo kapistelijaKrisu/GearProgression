@@ -8,7 +8,7 @@ class AvatarController extends BaseController {
             Redirect::to('/overview', array('errors' => array('Character does not exist!')));
         }
         $items = Item::findAll();
-        $nameFormatted = preg_replace('/\s+/', '%20', $avatar->name);
+        $nameFormatted = str_replace(' ', '%20', $avatar->name);
         $link = 'https://bnstree.com/character/na/' . $nameFormatted;
         
         View::make('character.html', array('avatar' => $avatar,
@@ -50,7 +50,7 @@ class AvatarController extends BaseController {
     }
 
     public static function deleteItem($id) {
-        parent::adminCheck();
+        parent::kick_non_admin();
         $player = parent::get_user_logged_in();
         parent::check_param_can_int($id, '/character/' . $id);
         parent::check_post_can_int('item', '/character/' . $id);

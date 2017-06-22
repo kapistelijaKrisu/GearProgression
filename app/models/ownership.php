@@ -62,11 +62,13 @@ class Ownership extends BaseModel {
         ));
     }
     public function delete() {
-        $query = DB::connection()->prepare('DELETE FROM Ownership WHERE a_id = :a_id AND i_id = :i_id');
+        $query = DB::connection()->prepare('DELETE FROM Ownership WHERE a_id = :a_id AND i_id = :i_id RETURNING a_id');
         $query->execute(array(
             'a_id' => $this->a_id,
             'i_id' => $this->i_id
         ));
+        $row = $query->fetch();
+        return $row['a_id'];
     }
 
 }

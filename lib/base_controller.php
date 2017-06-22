@@ -11,7 +11,7 @@ class BaseController {
         return null;
     }
 
-    public static function adminCheck() {
+    public static function kick_non_admin() {
         $admin = BaseController::get_user_logged_in();
         if ($admin == null || $admin->admin == false) {
             Redirect::to('/home', array('message' => 'You dont have the rights'));

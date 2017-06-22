@@ -80,8 +80,10 @@ class Item extends BaseModel {
     }
 
     public function delete() {
-        $query = DB::connection()->prepare('DELETE FROM Item WHERE id = :id;');
+        $query = DB::connection()->prepare('DELETE FROM Item WHERE id = :id RETURNING id');
         $query->execute(array('id' => $this->id));
+        $row = $query->fetch();
+        return $row['id'];
     }
 
 }
