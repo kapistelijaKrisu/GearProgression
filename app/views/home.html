@@ -3,24 +3,18 @@
 
 <h1>Home Page</h1><bR>
 {% import "macros/messages.html" as msg %}
+{% import "macros/tables.html" as tbl %}
 {{msg.message("#{message}")}}
 {{msg.errors("#{errors}")}}
 
 <div class="form-group">
-    <form method="post" action="{{base_path}}/home/find">
+    <form method="get" action="{{base_path}}/overview">
         <label>View character</label>
-        <input type="text" name="character" class="form-group"> 
+        <input type="text" name="search" class="form-group" placeholder="Seach by Name"> 
         <button type="submit" class="btn btn-info">Visit</button>        
     </form>
 </div>
 
-
-
-
-{% import "macros/messages.html" as msg %}
-{% import "macros/tables.html" as tbl %}
-{{msg.message("#{message}")}}
-{{msg.errors("#{errors}")}}
 
 <h2>Search by Category</h2><br>
 
@@ -47,11 +41,11 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><a href="{{base_path}}/main/1/1">main</a>
+                    <td><a href="{{base_path}}/main/1">main</a>
                     </td>
                 </tr>
                 <tr>
-                    <td><a href="{{base_path}}/main/0/1">alt</a>
+                    <td><a href="{{base_path}}/main/0">alt</a>
                     </td>
                 </tr>
             </tbody>

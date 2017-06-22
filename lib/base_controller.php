@@ -14,20 +14,20 @@ class BaseController {
     public static function adminCheck() {
         $admin = BaseController::get_user_logged_in();
         if ($admin == null || $admin->admin == false) {
-            Redirect::to('/overview', array('message' => 'De fuc?'));
+            Redirect::to('/home', array('message' => 'You dont have the rights'));
         }
     }
 
     public static function check_logged_in() {
         if (get_user_logged_in() == null) {
-            View::make('login.html', array('error' => 'log in first please!'));
+            View::make('login.html', array('errors' => 'log in first please!'));
         }
     }
 
     public static function check_admin() {
         $player = get_user_logged_in();
         if ($player == null || $player->admin == false) {
-            View::make('overview.html', array('message' => 'de fuc'));
+            View::make('home.html', array('errors' => 'You dont have the rights'));
         }
     }
 

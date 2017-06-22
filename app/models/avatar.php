@@ -3,6 +3,21 @@
 class Avatar extends BaseModel {
 
     public static $maxCountPerNormalPlayer = 10;
+
+    const SELECT_START_PART_PSQL = 'SELECT'
+            . ' Avatar.id, Avatar.name, Avatar.main,'
+            . ' Avatar.c_id, Avatar.e_id,'
+            . ' Avatar.p_id,'
+            . ' Clas.name as c_name,'
+            . ' Element.type as e_type,'
+            . ' Item.id as i_id,'
+            . ' Item.name as i_name'
+            . ' FROM Avatar LEFT JOIN Ownership ON Avatar.id = Ownership.a_id'
+            . ' LEFT JOIN Item ON Ownership.i_id = Item.id'
+            . ' INNER JOIN Clas ON Clas.id = Avatar.c_id'
+            . ' INNER JOIN Element ON Element.id = Avatar.e_id ';
+    const ORDER_BY_PSQL = ' ORDER BY Avatar.main desc, Avatar.name, Avatar.id';
+
     public $id, $owner_id, $element, $clas, $name, $main, $stats, $ownerships;
 
     public function __construct($attributes) {
@@ -25,7 +40,7 @@ class Avatar extends BaseModel {
         $avatars = Avatar::findByPlayer($this->owner_id);
         if (sizeof($avatars) == Avatar::$maxCountPerNormalPlayer) {
             if ($this->id == null || Avatar::findById($this->id) == null) {
-                $errors[] = 'pleb can have only ' . Avatar::$maxCountPerNormalPlayer . ' characters!';
+                $errors[] = 'only admin can have more than ' . Avatar::$maxCountPerNormalPlayer . ' characters!';
             }
         } else if (sizeof($avatars) > Avatar::$maxCountPerNormalPlayer) {
             $errors[] = 'how do u have more than ' . Avatar::$maxCountPerNormalPlayer . ' character(s) without admin rights!';
@@ -44,7 +59,7 @@ class Avatar extends BaseModel {
         $found_mains = Avatar::get_main_avatars($this->owner_id);
         if (sizeof($found_mains) == 1) {
             if ($this->id == null || $this->id != $found_mains[0])
-                $errors[] = 'pleb can have only one main!';
+                $errors[] = 'Only admin can have more than one main!';
         } else if (sizeof($found_mains) > 1) {
             $errors[] = 'how do u have more than one main character without admin rights!';
         }
@@ -70,11 +85,11 @@ class Avatar extends BaseModel {
         $this->ownerships[$row['i_id']] = $item;
     }
 
-    public static function extractData($row) {
+    public static function extractAvatar($row) {
         $ele = new Element(array('id' => $row['e_id'], 'type' => $row['e_type']));
         $clas = new Clas(array('id' => $row['c_id'], 'name' => $row['c_name']));
         $avatar = new Avatar(array(
-            'id' => $row['a_id'],
+            'id' => $row['id'],
             'owner_id' => $row['p_id'],
             'clas' => $clas,
             'element' => $ele,
@@ -83,32 +98,16 @@ class Avatar extends BaseModel {
         return $avatar;
     }
 
-    public static function getCoreSelect() {
-        return 'SELECT'
-                . ' Avatar.id as a_id, Avatar.name, Avatar.main,'
-                . ' Avatar.c_id, Avatar.e_id,'
-                . ' Player.id as p_id,'
-                . ' Clas.name as c_name,'
-                . ' Element.type as e_type,'
-                . ' Item.id as i_id,'
-                . ' Item.name as i_name'
-                . ' FROM Avatar LEFT JOIN Ownership ON Avatar.id = Ownership.a_id'
-                . ' LEFT JOIN Item ON Ownership.i_id = Item.id'
-                . ' LEFT JOIN Player ON Player.id = Avatar.p_id'
-                . ' LEFT JOIN Clas ON Clas.id = Avatar.c_id'
-                . ' LEFT JOIN Element ON Element.id = Avatar.e_id';
-    }
-
     public static function loop_many($rows) {
         $avatars = array();
 
         $counter = -1234;
         $currentAvatar;
         foreach ($rows as $row) {
-            if ($counter != $row['a_id']) {
-                $counter = $row['a_id'];
+            if ($counter != $row['id']) {
+                $counter = $row['id'];
 
-                $currentAvatar = Avatar::extractData($row);
+                $currentAvatar = Avatar::extractAvatar($row);
                 $avatars[] = $currentAvatar;
             }
             $currentAvatar->addOwnershipFromRow($row);
@@ -120,65 +119,64 @@ class Avatar extends BaseModel {
         $currentAvatar = null;
         foreach ($rows as $row) {
             if ($currentAvatar == null) {
-                $currentAvatar = Avatar::extractData($row);
-                $avatars[] = $currentAvatar;
+                $currentAvatar = Avatar::extractAvatar($row);
             }
             $currentAvatar->addOwnershipFromRow($row);
         }
-
         return $currentAvatar;
     }
 
     public static function get_main_avatars($player_id) {
-        $query = DB::connection()->prepare(Avatar::getCoreSelect()
+        $query = DB::connection()->prepare(Avatar::SELECT_START_PART_PSQL
                 . ' WHERE Player.id = :id'
                 . ' AND Avatar.main = TRUE'
-                . ' ORDER BY a_id');
+                . Avatar::ORDER_BY_PSQL);
         $query->execute(array('id' => $player_id));
         $rows = $query->fetchAll();
         return Avatar::loop_many($rows);
     }
 
     public static function get_avatar_by_name($name) {
-        $query = DB::connection()->prepare(Avatar::getCoreSelect()
-                . ' WHERE Avatar.name = :name');
+        $query = DB::connection()->prepare(Avatar::SELECT_START_PART_PSQL
+                . ' WHERE Avatar.name = :name'
+                . Avatar::ORDER_BY_PSQL);
         $query->execute(array('name' => $name));
         $rows = $query->fetchAll();
         return Avatar::loop_single($rows);
     }
 
     public static function all($options) {
+        $queryString = Avatar::SELECT_START_PART_PSQL;
+        $param_arr = array();
 
         if (isset($options['category']) && isset($options['category_value'])) {
-            $category_col = $options['category'];
-            $category_value = $options['category_value'];
 
-            $query = DB::connection()->prepare(Avatar::getCoreSelect()
-                    . ' WHERE ' . $category_col . ' :id ORDER BY Avatar.name, a_id');
-            $query->execute(array(
-                'id' => $category_value
-            ));
-        } else {
-            $query = DB::connection()->prepare(Avatar::getCoreSelect()
-                    . ' ORDER BY Avatar.name, a_id');
-            $query->execute();
+            $param_arr['id'] = $options['category_value'];
+            $queryString .= ' WHERE ' . $options['category'] . ' :id ';
         }
+        if (isset($options['search'])) {
+            $queryString .= ' AND Avatar.name LIKE :like ';
+            $param_arr['like'] = '%' . $options['search'] . '%';
+        }
+        $queryString .= Avatar::ORDER_BY_PSQL;
+        $query = DB::connection()->prepare($queryString);
+        $query->execute($param_arr);
         $rows = $query->fetchAll();
         return Avatar::loop_many($rows);
     }
 
     public static function findByPlayer($id) {
 
-        $query = DB::connection()->prepare(Avatar::getCoreSelect()
-                . ' WHERE Player.id = :id'
-                . ' ORDER BY a_id');
+        $query = DB::connection()->prepare(Avatar::SELECT_START_PART_PSQL
+                . ' WHERE p_id = :id'
+                . Avatar::ORDER_BY_PSQL);
         $query->execute(array('id' => $id));
         $rows = $query->fetchAll();
         return Avatar::loop_many($rows);
     }
 
     public static function findById($id) {
-        $query = DB::connection()->prepare(Avatar::getCoreSelect()
+        $query = DB::connection()->prepare(Avatar::SELECT_START_PART_PSQL
                 . ' WHERE Avatar.id = :id');
         $query->execute(array('id' => $id));
         $rows = $query->fetchAll();
@@ -186,7 +184,7 @@ class Avatar extends BaseModel {
         $currentAvatar = null;
         foreach ($rows as $row) {
             if ($currentAvatar == null) {
-                $currentAvatar = Avatar::extractData($row);
+                $currentAvatar = Avatar::extractAvatar($row);
                 $avatars[] = $currentAvatar;
             }
             $currentAvatar->addOwnershipFromRow($row);

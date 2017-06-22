@@ -33,21 +33,34 @@ class BaseModel {
         $errors = array();
         foreach ($param_arr as $toValidate) {
             $value = $this->{$toValidate['attribute']};
-            if (is_string($value)) {
-                $trimmed = preg_replace('/\s+/', '', $value);
-                if ($trimmed == null ||
-                        strlen($trimmed) < $toValidate['min'] ||
-                        strlen($trimmed) > $toValidate['max']) {
-                    $errors[] = $toValidate['attribute'] . ' has to be ' . $toValidate['min'] . '-' . $toValidate['max'] . ' characters long and spaces do not count!';
-                }
-            } else {
+            
+            if ($value == null) {
+                $errors[] = $toValidate['attribute'] . ' cannot be empty!';
+            }
+            if (!is_string($value)) {
                 $errors[] = $toValidate['attribute'] . ' has to be string';
+                return $errors;
+            }
+            $space_count = substr_count($value, ' ');
+            if ($space_count > 1) {
+                $errors[] = $toValidate['attribute'] . ' Only 1 space is allowed';
+                return $errors;
+            }
+            $spaces_out = str_replace(' ', '', $value);
+           
+            if (!ctype_alnum($spaces_out)) {
+                $errors[] = $toValidate['attribute'] . ' Only alpha or numeric characters are allowed!';
+                return $errors;
+            }
+            if (strlen($value) < $toValidate['min'] ||
+                    strlen($value) > $toValidate['max']) {
+                $errors[] = $toValidate['attribute'] . ' has to be ' . $toValidate['min'] . '-' . $toValidate['max'] . ' characters long and spaces do not count!';
             }
         }
         return $errors;
     }
 
-    public function validate_value_is_boolean($asName) {//fix to as param name
+    public function validate_value_is_boolean($asName) {
         $errors = array();
 
         if (is_bool($this->{$asName})) {
@@ -78,7 +91,7 @@ class BaseModel {
         try {
             foreach ($nameArr as $asName) {
                 $param = $this->{$asName};
-                (int)$param;
+                (int) $param;
             }
         } catch (Exception $ex) {
             $errors[] = 'value has to be integer!';

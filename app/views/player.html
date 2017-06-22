@@ -7,7 +7,7 @@
 {% import "macros/messages.html" as msg %}
 {{msg.message("#{message}")}}
 {{msg.errors("#{errors}")}}
-
+<div>
 <table class="table table-striped table-bordered">
     <thead>
         <tr>
@@ -19,21 +19,22 @@
     </thead>
 
     <tbody>
-
-        {% for avatar in avatars %}
-        {% set arrow = avatar.id %}
-        <tr>
-            <td><a href="{{base_path}}/character/{{avatar.id}}" class="btn-link btn-info">{{avatar.name}}</a></td>
-            <td><label
-                    {% if avatar.main %}
-                    class="label label-success">main</label>
-                {% else %} 
-                class="label label-danger">alt</label>
-            </td>
-            {% endif %}
+    {% for avatar in avatars %}
+    <tr>
+        <td><a href="{{base_path}}/character/{{avatar.id}}" class="btn-link btn-info">{{avatar.name}}</a></td>
+        <td><label
+                {% if avatar.main %}
+                class="label label-success">main</label>
+            {% else %} 
+            class="label label-danger">alt</label>
+        </td>
+        {% endif %}
     <form method="post" action="{{base_path}}/player/{{player.id}}/renameChar/{{avatar.id}}">   
-        <td><input type="text" name="avatar_name" class="form-group-sm" value="{{attributes.avatar.name}}"></td> 
-        <!--   <td><p>{{attributes.2}} - {{arrow}} - {{attributes.arrow}} - {{attributes.avatar.name}}</p>-->
+        <td><input type="text" name="avatar_name" class="form-group-sm" 
+                   {% if att[0] == avatar.id %} 
+                   value="{{att[1]}}"
+                   {% endif %}
+                   ></td>       
         <td><button type="submit" class="btn btn-success">Apply</button></td>
     </form>
 
@@ -41,11 +42,13 @@
 {% endfor %}
 </tbody>
 </table>
-
+</div>
+<br><br><br>
+<div>
 <form method="post" action="{{base_path}}/player/{{player.id}}/newChar">
     <div class="form-group"> 
         <label>Character Name</label>
-        <input type="text" name="character" class="form-group"> 
+        <input type="text" name="character" class="form-group" value="{{attributes.charName}}"> 
         <select name="priority">
             <option value="main">Main</option>
             <option value="alt">Alt</option>
@@ -73,9 +76,8 @@
         <button type="submit" class="btn btn-primary">Add</button>
     </div>
 </form>
-
-
-
+</div
+<br><br>
 <div>
     <form method="post" action="{{base_path}}/player/{{player.id}}/rename">
         <input type="text" name="player_name" value="{{attributes.playerName}}" class="form-group"> 

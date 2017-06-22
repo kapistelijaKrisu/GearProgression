@@ -34,20 +34,28 @@
             <td><label class="label label-info">{{avatar.element.type}}</label></td>
 
             {% for item in items %}
+            <td>
+                {% if avatar.ownerships[item.id] %}
+                <label class="label label-success">owned</label>
 
+                {% if player.admin %}
 
-            {% if avatar.ownerships[item.id] %}           
-            <td><label class="label label-success">owned</label></td>
-            {% elseif avatar.owner_id == player.id%}
-            <td><form method="post" action="{{base_path}}/character/{{avatar.id}}/addItem">
-       
-                    <button type="submit" name="item" value="{{item.id}}" class="btn-danger">Add</button>
-                    </select>
-
-                </form></td>
-            {% else %} 
-            <td><label class="label label-danger">RIP</label></td>
+                <form method="post" action="{{base_path}}/character/{{avatar.id}}/deleteItem">
+                    <button type="submit" name="item" value="{{item.id}}" class="btn-danger">Delete</button>
+                </form>
+                {% endif %}
+                
+                {% else %}
+                <label class="label label-danger">RIP</label>
+                {% if avatar.owner_id == player.id or player.admin %}
+                <form method="post" action="{{base_path}}/character/{{avatar.id}}/addItem">
+                    <button type="submit" name="item" value="{{item.id}}" class="btn-success">Add</button>                   
+                </form>
+            
             {% endif %}
+            
+            {% endif %}
+            </td>
             {% endfor %}
         </tr>
     </tbody>

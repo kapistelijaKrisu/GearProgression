@@ -9,7 +9,8 @@ class AvatarController extends BaseController {
         }
         $items = Item::findAll();
         $nameFormatted = preg_replace('/\s+/', '%20', $avatar->name);
-        $link = 'https://bnstree.com/character/na/'.$nameFormatted;
+        $link = 'https://bnstree.com/character/na/' . $nameFormatted;
+        
         View::make('character.html', array('avatar' => $avatar,
             'items' => $items,
             'player' => parent::get_user_logged_in(),
@@ -26,12 +27,12 @@ class AvatarController extends BaseController {
         if ($avatar == null) {
             Redirect::to('/overview', array('errors' => array('Character does not exist!')));
         }
-        if ($player->id != $avatar->owner_id) {
-            Redirect::to('/overview', array('errors' => 'not yours!'));
+        if ($player->id != $avatar->owner_id && !$player->admin) {
+            Redirect::to('/overview', array('errors' => 'You don\'t have the right to do this!!'));
         }
         if (isset($_POST['item'])) {
             $owned = new Ownership(array("a_id" => $avatar->id, "i_id" => $_POST['item']));
-           
+
             $errors = $owned->errors();
             if (sizeof($errors) == 0) {
                 if (isset($avatar->ownerships[$owned->i_id])) {
@@ -42,10 +43,29 @@ class AvatarController extends BaseController {
                     Redirect::to('/character/' . $id, array('errors' => 'This item does not exist!'));
                 }
                 $owned->store();
-                Redirect::to('/character/' . $id, array('message' => 'Congratulations on your '.$item->name.'!'));
+                Redirect::to('/character/' . $id, array('message' => 'Congratulations on your ' . $item->name . '!'));
             }
         }
-         Redirect::to('/character/'.$id, array('errors' => $errors));
+        Redirect::to('/character/' . $id, array('errors' => $errors));
+    }
+
+    public static function deleteItem($id) {
+        parent::adminCheck();
+        $player = parent::get_user_logged_in();
+        parent::check_param_can_int($id, '/character/' . $id);
+        parent::check_post_can_int('item', '/character/' . $id);
+        
+        $avatar = Avatar::findById($id);
+        if ($avatar == null) {
+            Redirect::to('/character/'.$id, array('errors' => array('Character does not exist!')));
+        }
+        $item = Item::findById($_POST['item']);
+        if ($item == null) {
+            Redirect::to('/overview', array('errors' => array('This item does not exist!')));
+        }
+        $owned = Ownership::findOne($avatar->id, $item->id);
+        $owned->delete();
+        Redirect::to('/character/' . $id, array('message' => 'This item has been deleted: ' . $item->name . ' from: ' . $avatar->name . '!'));
     }
 
 }

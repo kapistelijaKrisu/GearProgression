@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Player configuration</h1>
+{% import "macros/messages.html" as msg %}
+{{msg.message("#{message}")}}
+{{msg.errors("#{errors}")}}
+<br>
+<h2>Add a player</h3>
+
+<div><div>
+        <form method="post" action="{{base_path}}/admin/newPlayer">
+
+            <label>New Player's Nickname</label>
+            <br> <input type="text" name="player_name" class="form-inline" value="{{name}}"> 
+            <div>
+                <button type="submit" class="btn btn-primary">Add Player to raid</button>
+            </div>
+        </form>
+        <br><br>
+    </div>
+    <h2>Current players</h3>
+    <div>
+        <form method="post" action="{{base_path}}/admin/modPlayer">
+
+            <select name="player" class="col-xs-3">
+                {% for p in players %}
+                <option name="avatar" value="{{p.id}}">{{p.name}}
+                {% if p.admin %}
+                 -Admin
+                {% else %}
+                 -Pleb
+                {% endif %}
+                </option>
+                {% endfor %}
+            </select>
+            <button type="submit" name="mod" value="reset_password" class="btn btn-primary">Reset password to "asd"</button>
+             <button type="submit" name="mod" value="delete" class="btn btn-danger">Delete</button>
+            </select>
+        </form>
+        
+
+    </div>
+
+    {% endblock %}

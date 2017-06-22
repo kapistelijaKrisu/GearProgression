@@ -41,9 +41,7 @@
                         <!-- Navigaation linkit -->
                         <li><a href="{{base_path}}/overview">All Characters</a></li>
                         {% if player %}
-                        {% if player.admin %}
-                        <li><a href="{{base_path}}/admin">Settings</a></li>
-                        {% endif %}
+                        
                         <li><a href="{{base_path}}/player/{{player.id}}">My Page</a></li>
                         <li><a href="{{base_path}}/logout">Log out</a></li>
                         {% else %}
@@ -52,6 +50,19 @@
                         <li><a>-----------</a></li>
                         <li><a>admin user: booom<br>password: 321</a></li>
                         <li><a>normal user: asd<br>password: 123</a></li>
+                        {% if player.admin %}
+                      
+                        <li class="dropdown">
+                                <button class="dropdown-toggle" type="button" data-toggle="dropdown">Admin<br>goodies
+                                    <span class="caret"></span></button>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="{{base_path}}/admin/player">Players</a></li>
+                                        <li><a href="{{base_path}}/admin/character">Characters</a></li>
+                                        <li><a href="{{base_path}}/admin/config">System Configuration</a></li>
+                                    </ul>
+                           
+                        </li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>

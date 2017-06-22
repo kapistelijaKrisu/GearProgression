@@ -6,29 +6,40 @@ class OverviewController extends BaseController {
 
         $category_name = OverviewController::inspectName($category_name);
         $category_value = OverviewController::inspectValue($category_name, $category_value);
-        parent::check_param_can_int($page, '/home');
 
         $avatars = Avatar::all(array('category' => $category_name, 'category_value' => $category_value));
+        if (sizeof($avatars) == 0) {
+            Redirect::to('/home', array('errors' => array('No characters found!')));
+        }
         $items = Item::findAll();
         $player = BaseController::get_user_logged_in();
         View::make('overview.html', array('avatars' => $avatars, 'items' => $items, 'player' => $player));
     }
-    
+
     public static function list_characters() {
-       
-        $avatars = Avatar::all(array());
-        $items = Item::findAll();
-        $player = BaseController::get_user_logged_in();
-        View::make('overview.html', array('avatars' => $avatars, 'items' => $items, 'player' => $player));
+        $arr = array();
+        $html_arr = array();
+        if (isset($_GET['search'])) {
+            $arr['search'] = $_GET['search'];
+            $html_arr['message'] = 'search complete!';
+        }
+        
+        $html_arr['avatars'] = Avatar::all($arr);
+        if (sizeof($html_arr['avatars']) == 0) {
+            Redirect::to('/home', array('errors' => array('No characters found!')));
+        }
+        $html_arr['items'] = Item::findAll();
+        $html_arr['player'] = parent::get_user_logged_in();
+        View::make('overview.html', $html_arr);
     }
 
     public static function inspectName($name) {
         if ($name == 'main') {
             return 'Avatar.main =';
         } else if ($name == 'Clas' || $name == 'Element') {
-            return $name.'.id =';
+            return $name . '.id =';
         } else if ($name == 'Item') {
-            return $name.'.id !=';
+            return $name . '.id !=';
         }
         Redirect::to('/home', array('errors' => 'invalid search values for characters'));
     }

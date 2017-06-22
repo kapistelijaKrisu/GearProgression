@@ -16,8 +16,14 @@ $routes->get('/logout', function() {
 $routes->get('/overview/', function() {
     OverviewController::list_characters();
 });
-$routes->get('/admin', function() {
-    AdminController::adminPage();
+$routes->get('/admin/config', function() {
+    AdminConfigController::adminPage();
+});
+$routes->get('/admin/character', function() {
+    AdminAvatarController::adminPage();
+});
+$routes->get('/admin/player', function() {
+    AdminPlayerController::adminPage();
 });
 $routes->get('/player/:id', function($id) {
     PlayerController::myPage($id);
@@ -46,6 +52,9 @@ $routes->post('/overview/deleteItem/:id', function($character_id) {
 $routes->post('/character/:id/addItem', function($character) {
     AvatarController::addItem($character);
 });
+$routes->post('/character/:id/deleteItem', function($character) {
+    AvatarController::deleteItem($character);
+});
 
 
 
@@ -69,39 +78,42 @@ $routes->post('/player/:id/password', function() {
     PlayerController::changePassword();
 });
 
-
+//admin add
 
 $routes->post('/admin/newEle', function() {
-    AdminController::store_element();
+    AdminConfigController::store_element();
 });
 $routes->post('/admin/newClas', function() {
-    AdminController::store_clas();
+    AdminConfigController::store_clas();
 });
 $routes->post('/admin/newItem', function() {
-    AdminController::store_item();
+    AdminConfigController::store_item();
 });
 $routes->post('/admin/newPlayer', function() {
-    AdminController::store_player();
+    AdminPlayerController::store_player();
 });
 $routes->post('/admin/newChar', function() {
-    AdminController::store_avatar();
+    AdminAvatarController::store_avatar();
 });
 
-
+//admin del
 $routes->post('/admin/delEle', function() {
-    AdminController::delete_element();
+    AdminConfigController::delete_element();
 });
 $routes->post('/admin/delClas', function() {
-    AdminController::delete_clas();
+    AdminConfigController::delete_clas();
 });
 $routes->post('/admin/delItem', function() {
-    AdminController::delete_item();
+    AdminConfigController::delete_item();
 });
-$routes->post('/admin/delPlayer', function() {
-    AdminController::delete_player();
+
+//admin mod
+$routes->post('/admin/modPlayer', function() {
+    AdminPlayerController::mod_player();
 });
-$routes->post('/admin/delChar', function() {
-    AdminController::delete_character();
+
+$routes->post('/admin/del', function() {
+    AdminAvatarController::delete();
 });
 
 
