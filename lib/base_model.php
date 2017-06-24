@@ -29,58 +29,56 @@ class BaseModel {
         return $errors;
     }
 
-    public function validate_string_lengths($param_arr) {
+    public function validate_name($toValidate) {
         $errors = array();
-        foreach ($param_arr as $toValidate) {
-            $value = $this->{$toValidate['attribute']};
-            
-            if ($value == null) {
-                $errors[] = $toValidate['attribute'] . ' cannot be empty!';
-            }
-            if (!is_string($value)) {
-                $errors[] = $toValidate['attribute'] . ' has to be string';
-                return $errors;
-            }
-            $space_count = substr_count($value, ' ');
-            if ($space_count > 1) {
-                $errors[] = $toValidate['attribute'] . ' Only 1 space is allowed';
-                return $errors;
-            }
-            $spaces_out = str_replace(' ', '', $value);
-           
-            if (!ctype_alnum($spaces_out)) {
-                $errors[] = $toValidate['attribute'] . ' Only alpha or numeric characters are allowed!';
-                return $errors;
-            }
-            if (strlen($value) < $toValidate['min'] ||
-                    strlen($value) > $toValidate['max']) {
-                $errors[] = $toValidate['attribute'] . ' has to be ' . $toValidate['min'] . '-' . $toValidate['max'] . ' characters long and spaces do not count!';
-            }
+        $value = $this->{$toValidate['attribute']};
+
+        if ($value == null) {
+            $errors[] = $toValidate['attribute'] . ' cannot be empty!';
         }
-        return $errors;
-    }
-
-    public function validate_value_is_boolean($asName) {
-        $errors = array();
-
-        if (is_bool($this->{$asName})) {
+        if (!is_string($value)) {
+            $errors[] = $toValidate['attribute'] . ' has to be string';
             return $errors;
-        } else {
-            $errors[] = $asName . ' value has to be bool!';
         }
-        Kint::dump($errors);
+        if (strlen($value) < $toValidate['min'] ||
+                strlen($value) > $toValidate['max']) {
+            $errors[] = $toValidate['attribute'] . ' has to be ' . $toValidate['min'] . '-' . $toValidate['max'] . ' characters long!';
+        }
+        $space_count = substr_count($value, ' ');
+        if ($space_count > 1) {
+            $errors[] = $toValidate['attribute'] . ' only 1 space is allowed';
+        }
+        $lastChar = substr($value, -1);
+        if ($lastChar == ' ') {
+            $errors[] = $toValidate['attribute'] . ' last character cannot be a space!';
+        }
+        $firstChar = substr($value, 0, 1);
+        if ($firstChar == ' ') {
+            $errors[] = $toValidate['attribute'] . ' first character cannot be a space!';
+        }
         return $errors;
     }
 
-    public function check_classes_are_correct($evaluated) {
+    public function validate_attributes_are_boolean($attributeArray) {
+        $errors = array();
+
+        foreach ($attributeArray as $asName) {
+            if (!is_bool($this->{$asName})) {
+                $errors[] = $asName . ' value has to be bool!';
+            }
+        }
+        return $errors;
+    }
+
+    public function validate_object_classes_are_correct($evaluated) {
         $errors = array();
         foreach ($evaluated as $desired_class_name => $param_name) {
-            if ($desired_class_name == null || is_string($desired_class_name) == false) {
-                $errors[] = 'array key is invalid must be a string';
-            } else if ($param_name == null || is_string($param_name) == false) {
-                $errors[] = 'array value is invalid must be a string';
-            } else if (get_class($this->{$param_name}) != $desired_class_name) {
-                $errors[] = 'Expected object class to be ' . $desired_class_name . ' but was ' . get_class($this->{$param_name}) . ' or null php is funny';
+            try {
+                if (get_class($this->{$param_name}) != $desired_class_name) {
+                    $errors[] = 'Expected object class to be ' . $desired_class_name . ' but was ' . get_class($this->{$param_name}) . ' or null php is funny';
+                }
+            } catch (Exception $ex) {
+                $errors[] = $param_name . ' was not an stdObject';
             }
         }
         return $errors;

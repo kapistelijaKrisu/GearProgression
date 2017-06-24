@@ -3,81 +3,22 @@
 <h1>Status</h1>
 
 {% import "macros/messages.html" as msg %}
+{% import "macros/tables.html" as tbl %}
 {{msg.message("#{message}")}}
 {{msg.errors("#{errors}")}}
 
 <table class="table table-striped table-bordered">
-    <thead>
-        <tr>
-            <th><button type="button" class="btn btn-danger">Character</button></th>
-            <th><button type="button" class="btn btn-info">Main</button></th>       
-            <th><button type="button" class="btn btn-success">Element</button></th>
-            <th><button type="button" class="btn btn-info">Class</button></th>
-
-
-
-            {% for item in items %}
-            <th><button type="button" class="btn btn-default">{{item.name}}</button></th>
-            {% endfor %}
-        </tr>
-    </thead>
-
+    {{tbl.avatar_tbl_header(items)}}
     <tbody>
 
         {% for avatar in avatars %}
-
-        <tr>
-            <td><a href="{{base_path}}/character/{{avatar.id}}">{{avatar.name}}</td>
-            <td>
-                {% if avatar.main %}           
-                <label class="label label-success">Yes</label>
-                {% else %}
-                <label class="label label-danger">No</label>
-                {% endif %}
-            </td>
-            <td><label class="label label-info">{{avatar.element.name}}</label></td>
-            <td><label class="label label-info">{{avatar.clas.name}}</label></td> 
-
-            {% if player.admin == true %}
-            {% for item in items %}
-            {% if avatar.ownerships[item.id] %}    
-            <td><label class="label label-success">Owned</label>
-                <form method="post" action="{{base_path}}/overview/deleteItem/{{avatar.id}}">
-
-                    <button type="submit" name="item" value="{{item.id}}" class="btn-primary">Delete</button>
-                    </select>
-
-                </form></td>
-
-            {% else %}
-            <td><label class="label label-danger">RIP</label>
-                <form method="post" action="{{base_path}}/overview/addItem/{{avatar.id}}">
-
-                    <button type="submit" name="item" value="{{item.id}}" class="btn-primary">Add</button>
-                    </select>
-
-                </form></td>
-            {% endif %}
-
-            {% endfor %}
-
-            {% else %} 
-
-            {% for item in items %}
-
-            {% if avatar.ownerships[item.id] %}           
-            <td><label class="label label-success">Owned</label></td>
-            {% else %} 
-            <td><label class="label label-danger">RIP</label></td>
-            {% endif %}
-            {% endfor %}
-            {% endif %}
-        </tr>
-
-
+        {{tbl.avatar_table_row(items, avatar, player,
+                    "#{base_path}"~"/overview/addItem/"~"#{avatar.id}",
+                    "#{base_path}"~"/overview/deleteItem/"~"#{avatar.id}"
+                    )}}
         {% endfor %}
+
     </tbody>
 </table>
-
 
 {% endblock %}

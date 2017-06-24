@@ -64,7 +64,7 @@ $routes->post('/player/:id/newChar/', function() {
 });
 
 $routes->post('/player/:id/renameChar/:a_id', function($p_id, $a_id) {
-    PlayerController::renameOwnedChar($p_id, $a_id);
+    PlayerController::renameOwnedAvatar($p_id, $a_id);
 });
 $routes->post('/player/:id/ditch', function() {
     PlayerController::deleteSelf();
@@ -112,8 +112,8 @@ $routes->post('/admin/modPlayer', function() {
     AdminPlayerController::mod_player();
 });
 
-$routes->post('/admin/del', function() {
-    AdminAvatarController::delete();
+$routes->post('/admin/modAvatar', function() {
+    AdminAvatarController::mod_avatar();
 });
 
 

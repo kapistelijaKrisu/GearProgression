@@ -5,95 +5,70 @@
 <h1>{{player.name}}</h1>
 
 {% import "macros/messages.html" as msg %}
+{% import "macros/forms.html" as forms %}
 {{msg.message("#{message}")}}
 {{msg.errors("#{errors}")}}
 <div>
-<table class="table table-striped table-bordered">
-    <thead>
-        <tr>
-            <th><label class="label label-default">Character</label></th>
-            <th><label class="label label-default">Priority</label></th>
-            <th><label class="label label-default">New Name</label></th>
-            <th><label class="label label-danger">Rename</label></th>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th><label class="label label-default">Character</label></th>
+                <th><label class="label label-default">Priority</label></th>
+                <th><label class="label label-default">New Name</label></th>
+                <th><label class="label label-danger">Rename</label></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for avatar in avatars %}
+            <tr>
+                <td><a href="{{base_path}}/character/{{avatar.id}}" class="btn-link btn-info">{{avatar.name}}</a></td>
+                <td><label
+                        {% if avatar.main %}
+                        class="label label-success">main</label>
+                    {% else %} 
+                    class="label label-danger">alt</label>
+                </td>
+                {% endif %}
+        <form method="post" action="{{base_path}}/player/{{player.id}}/renameChar/{{avatar.id}}">   
+            <td><input type="text" name="avatar_name" class="form-group-sm" 
+                       {% if att[0] == avatar.id %} 
+                       value="{{att[1]}}"
+                       {% endif %}
+                       ></td>       
+            <td><button type="submit" class="btn btn-success">Apply</button></td>
+        </form>
+
         </tr>
-    </thead>
-
-    <tbody>
-    {% for avatar in avatars %}
-    <tr>
-        <td><a href="{{base_path}}/character/{{avatar.id}}" class="btn-link btn-info">{{avatar.name}}</a></td>
-        <td><label
-                {% if avatar.main %}
-                class="label label-success">main</label>
-            {% else %} 
-            class="label label-danger">alt</label>
-        </td>
-        {% endif %}
-    <form method="post" action="{{base_path}}/player/{{player.id}}/renameChar/{{avatar.id}}">   
-        <td><input type="text" name="avatar_name" class="form-group-sm" 
-                   {% if att[0] == avatar.id %} 
-                   value="{{att[1]}}"
-                   {% endif %}
-                   ></td>       
-        <td><button type="submit" class="btn btn-success">Apply</button></td>
-    </form>
-
-</tr>
-{% endfor %}
-</tbody>
-</table>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
 <br><br><br>
 <div>
-<form method="post" action="{{base_path}}/player/{{player.id}}/newChar">
-    <div class="form-group"> 
+    <form method="post" action="{{base_path}}/player/{{player.id}}/newChar">
         <label>Character Name</label>
-        <input type="text" name="character" class="form-group" value="{{attributes.charName}}"> 
-        <select name="priority">
-            <option value="main">Main</option>
-            <option value="alt">Alt</option>
-        </select>
-
-        <select name="element">
-            {% for ele in elements %}
-            <option value="{{ele.id}}">{{ele.name}}</option>
-            {% endfor %}
-        </select>
-        <select name="class">
-            {% for class in classes %}
-            <option value="{{class.id}}">{{class.name}}</option>
-            {% endfor %}
-        </select>
-
-    </div>
-    <div class="form-group">
-
-        {% for item in items %}
-        <input type="checkbox" name="{{item.id}}">{{item.name}}
-        {% endfor %}             
-    </div>
-    <div class="form-group">
+        <input type="text" name="character" class="form-group" value="{{attributes.charName}}">
+        {{forms.avatar_priority_bar()}}
+        {{forms.select_bar("Main element", "element", elements)}}
+        {{forms.select_bar("Class", "class", classes)}}
+        <br>  
+        <p>Owns: </p>
+        {{forms.array_to_checkbox(items)}} 
+        <br>     
         <button type="submit" class="btn btn-primary">Add</button>
-    </div>
-</form>
+    </form>
 </div
 <br><br>
 <div>
-    <form method="post" action="{{base_path}}/player/{{player.id}}/rename">
-        <input type="text" name="player_name" value="{{attributes.playerName}}" class="form-group"> 
-        <button type="submit" class="btn-lg btn-info">rename!</button>
-    </form>
+    {{forms.simple_text_form("New account name",  "#{base_path}"~"/player/"~"#{player.id}"~"/rename", "name", attributes.playerName, "Rename!")}}
 </div><br>
-
 <div>
-    <form method="post" action="{{base_path}}/player/{{player.id}}/password">
-        <input type="text" name="player_pass" value="" class="form-group"> 
-        <button type="submit" class="btn-lg btn-info">new password!</button>
-    </form>
+    {{forms.simple_text_form("New password",  "#{base_path}"~"/player/"~"#{player.id}"~"/password", "password", attributes.password, "Change password!")}}
 </div><br>
 
 {% if not player.admin %}
-<div>     
+<div>
     <form method="post" action="{{base_path}}/player/{{player.id}}/ditch">
         <button type="submit" class="btn-lg btn-danger">Leave from raid listing</button>
     </form>

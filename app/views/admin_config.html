@@ -3,97 +3,27 @@
 
 <h1>Configuration</h1>
 {% import "macros/messages.html" as msg %}
+{% import "macros/tables.html" as tbl %}
+{% import "macros/forms.html" as forms %}
 {{msg.message("#{message}")}}
 {{msg.errors("#{errors}")}}
 
 <div class="row">
     <div class="col-md-3 offest-md-1">
         <h2>Items</h2> 
-
-        <form method="post" action="{{base_path}}/admin/newItem">
-            <div>
-                <label>Item Nickname</label>
-                <input type="text" name="item" class="form-inline">  
-                <button type="submit" class="btn btn-primary">Add</button>
-            </div>
-        </form>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>
-                        <p class="d-inline">Current Items</p>
-                    </th>
-                </tr>                      
-            </thead>
-            <tbody>
-                {% for item in items %}
-                <tr>
-                    <td><a>{{item.name}}</a></td>
-                    <td><form method="post" action="{{base_path}}/admin/delItem">        
-                            <button type="submit" name="item" value="{{item.id}}" class="btn btn-danger">
-                                Delete</button></form></td></tr>
-                {% endfor %} 
-            </tbody>
-        </table>
+        
+        {{forms.simple_text_form("Item name",  "#{base_path}"~"/admin/newItem", "name", attributes.item, "Add!")}}
+        {{tbl.delete_table("Current Items", items, "#{base_path}"~"/admin/delItem")}}
     </div>
     <div class="col-md-3 offest-md-1">
         <h2>Elements</h2>
-        <form method="post" action="{{base_path}}/admin/newEle">
-            <div>
-                <label>Element Name</label>
-                <input type="text" name="element" class="form-inline">  
-                <button type="submit" class="btn btn-primary">Add</button>
-            </div>
-        </form>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>
-                        <p class="d-inline">Current Elements</p>
-                    </th>
-                </tr>                      
-            </thead>
-            <tbody>
-                {% for ele in elements %}
-                <tr>
-
-                    <td><a>{{ele.name}}</a></td>
-                    <td><form method="post" action="{{base_path}}/admin/delEle">        
-                            <button type="submit" value="{{ele.id}}" name="element" class="btn btn-danger">
-                                Delete</button></form></td>   
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {{forms.simple_text_form("Element name",  "#{base_path}"~"/admin/newEle", "name", attributes.element, "Add!")}}     
+        {{tbl.delete_table("Current Elements", elements, "#{base_path}"~"/admin/delEle")}}
     </div>
     <div class="col-md-3 offest-md-1">
         <h2>Classes</h2>
-        <form method="post" action="{{base_path}}/admin/newClas">
-            <div>
-                <label>Class name</label>
-                <input type="text" name="class" class="form-inline">  
-                <button type="submit" class="btn btn-primary">Add</button>
-            </div>
-        </form>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>
-                        <p class="d-inline">Current Classes</p>
-                    </th>
-                </tr>                      
-            </thead>
-            <tbody>
-                {% for clas in classes %}
-                <tr>
-                    <td><a>{{clas.name}}</a></td>
-                    <td><form method="post" action="{{base_path}}/admin/delClas">        
-                            <button type="submit" name="class" value="{{clas.id}}" class="btn btn-danger">
-                                Delete</button></form></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {{forms.simple_text_form("Class name",  "#{base_path}"~"/admin/newClas", "name", attributes.clas, "Add!")}}  
+        {{tbl.delete_table("Current Classes", classes, "#{base_path}"~"/admin/delClas")}}
     </div>
 </div>
 

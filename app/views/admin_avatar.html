@@ -3,10 +3,11 @@
 
 <h1>Admin Page</h1>
 {% import "macros/messages.html" as msg %}
+{% import "macros/forms.html" as forms %}
 {{msg.message("#{message}")}}
 {{msg.errors("#{errors}")}}
 
-<h2>Characters</h2>
+<h3>Characters</h3>
 
 <br>
 <div class="form-group">
@@ -18,47 +19,31 @@
             {% endfor %}
         </select>
         <label>Character Name</label>
-        <input type="text" name="character" class="form-group" value="{{name}}"> 
-        <select name="priority">
-            <option value="main">Main</option>
-            <option value="alt">Alt</option>
-        </select>
-
-        <select name="element">
-            {% for ele in elements %}
-            <option value="{{ele.id}}">{{ele.name}}</option>
-            {% endfor %}
-        </select>
-        <select name="class">
-            {% for class in classes %}
-            <option value="{{class.id}}">{{class.name}}</option>
-            {% endfor %}
-        </select>
-
-
-        <div class="form-group">
-            <a>Owns: </a>
-            {% for item in items %}
-            <input type="checkbox" name="{{item.id}}">{{item.name}}
-            {% endfor %}               
-        </div>
+        <input type="text" name="character" class="form-group" value="{{name}}">
+        {{forms.avatar_priority_bar()}}
+        {{forms.select_bar("Main element", "element", elements)}}
+        {{forms.select_bar("Class", "class", classes)}}
+        <br>  
+        {{forms.array_to_checkbox(items)}} 
+        <br><br>
+        <button type="submit" class="btn btn-success">Add Character to Raid</button>
+    </form>
 </div>
-<div class="form-group">
-    <button type="submit" class="btn btn-success">Add Character to Raid</button>
-</div></form>
 <br><br>
+
 <h3>Current characters</h3>
 <div>
-    <form method="post" action="{{base_path}}/admin/del">
-
-        <select name="avatar">
+    <form method="post" action="{{base_path}}/admin/modAvatar">
+        <input type="text" name="avatar_name" class="form-inline" value="{{attributes.avatar_name}}">
+        <br>
+        <select name="avatar" class="col-xs-3">
             {% for avatar in avatars %}
             <option name="avatar" value="{{avatar.id}}">{{avatar.name}}</option>
             {% endfor %}
-        </select>
-        <button type="submit" class="btn btn-danger">Delete character</button>
-        </select>
+        </select>     
+        <button type="submit" name="mod" value="rename" class="btn btn-primary">Rename</button>
+        <button type="submit" name="mod" value="delete" class="btn btn-danger">Delete character</button>
+    </form>
+</div>
 
-    </form></div>
-
- {% endblock %}
+{% endblock %}

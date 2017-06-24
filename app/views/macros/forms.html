@@ -1,0 +1,32 @@
+{% macro simple_text_form(title, actionPath, postName, value, buttonName) %}
+<form method="post" action="{{actionPath}}">
+    <div>
+        <label>{{title}}</label>
+        <input type="text" name="{{postName}}" class="form-inline" value="{{value}}">  
+        <button type="submit" class="btn btn-primary">{{buttonName}}</button>
+    </div>
+</form>
+{% endmacro %}
+
+{% macro select_bar(title, name, content_array) %}
+{{title}}
+<select name="{{name}}">
+    {% for var in content_array %}
+    <option value="{{var.id}}">{{var.name}}</option>
+    {% endfor %}
+</select>
+{% endmacro %}
+
+{% macro avatar_priority_bar() %}
+Priority
+<select name="priority">
+    <option value="main">Main</option>
+    <option value="alt">Alt</option>
+</select>
+{% endmacro %}
+
+{% macro array_to_checkbox(array) %}
+    {% for var in array %}
+        <input type="checkbox" name="{{var.id}}">{{var.name}}
+    {% endfor %}       
+{% endmacro %}

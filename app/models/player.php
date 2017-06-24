@@ -1,20 +1,29 @@
 <?php
 
 class Player extends BaseModel {
-
     public $id, $name, $password, $admin;
 
     public function __construct($attributes) {
         parent::__construct($attributes);
 
         $this->validators = array(
-            'validate_string_lengths' => array(
-                array('min' => 3, 'max' => 20, 'attribute' => 'password'), 
-                array('min' => 3, 'max' => 20, 'attribute' => 'name')),
-            'validate_value_is_boolean' => 'admin');
+            'validate_password',
+            'validate_name' => array('min' => 4, 'max' => 20, 'attribute' => 'name'),
+            'validate_attributes_are_boolean' => array('admin'));
     }
 
-    
+    protected function validate_password() {
+        $errors = array();
+        if (is_string($this->password)) {
+            $minimimPasswordLength = 3;
+            if (strlen($this->password) < $minimimPasswordLength) {
+                $errors[] = 'Password is too short! Minimum length: '.$minimimPasswordLength;
+            }
+            return $errors;
+        }
+        $errors[] = 'Password has to be a string!';
+        return $errors;
+    }
     
     public function check_name_is_unique() {
         $errors = array();

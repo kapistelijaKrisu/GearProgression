@@ -2,8 +2,6 @@
 
 class Avatar extends BaseModel {
 
-    public static $maxCountPerNormalPlayer = 10;
-
     const SELECT_START_PART_PSQL = 'SELECT'
             . ' Avatar.id, Avatar.name, Avatar.main,'
             . ' Avatar.c_id, Avatar.e_id,'
@@ -12,41 +10,35 @@ class Avatar extends BaseModel {
             . ' Element.name as e_name,'
             . ' Item.id as i_id,'
             . ' Item.name as i_name'
-            . ' FROM Avatar LEFT JOIN Ownership ON Avatar.id = Ownership.a_id'
+            . ' FROM Avatar'
+            . ' LEFT JOIN Ownership ON Avatar.id = Ownership.a_id'
             . ' LEFT JOIN Item ON Ownership.i_id = Item.id'
             . ' INNER JOIN Clas ON Clas.id = Avatar.c_id'
             . ' INNER JOIN Element ON Element.id = Avatar.e_id ';
     const ORDER_BY_PSQL = ' ORDER BY Avatar.main desc, Avatar.name, Avatar.id';
+    
+    const CATEGORY_TO_PSQL = array(
+        'Element' => 'Element.id = :id ',
+        'Clas' => 'Clas.id = :id ',
+        'main' => 'Avatar.main = :id ',
+        'Item' => 'Avatar.id NOT IN (SELECT Avatar.id FROM Avatar LEFT JOIN Ownership ON Avatar.id = Ownership.a_id WHERE ownership.i_id = :id) ');
 
-    public $id, $owner_id, $element, $clas, $name, $main, $stats, $ownerships;
+    public $id, $owner_id, $element, $clas, $name, $main, $ownerships;
 
     public function __construct($attributes) {
         parent::__construct($attributes);
-        $this->ownerships = array();
+        if ($this->ownerships == null) {
+            $this->ownerships = array();
+        }
         $this->validators = array(
-            'validate_string_lengths' => array(
-                array('min' => 3, 'max' => 20, 'attribute' => 'name')),
-            'validate_value_is_boolean' => 'main',
-            'validate_values_are_int' => array('owner_id')
+            'validate_name' => array('min' => 3, 'max' => 20, 'attribute' => 'name'),
+            'validate_attributes_are_boolean' => array('main'),
+            'validate_values_are_int' => array('owner_id'),
+            'validate_object_classes_are_correct' => array('Element' => 'element', 'Clas' => 'clas')
         );
     }
 
-    // error check that technically are possible
-    public function check_non_admin_avatar_limit_count() {
-        $errors = array();
-        if (Player::findById($this->owner_id)->admin == true) {
-            return $errors;
-        }
-        $avatars = Avatar::findByPlayer($this->owner_id);
-        if (sizeof($avatars) == Avatar::$maxCountPerNormalPlayer) {
-            if ($this->id == null || Avatar::findById($this->id) == null) {
-                $errors[] = 'only admin can have more than ' . Avatar::$maxCountPerNormalPlayer . ' characters!';
-            }
-        } else if (sizeof($avatars) > Avatar::$maxCountPerNormalPlayer) {
-            $errors[] = 'how do u have more than ' . Avatar::$maxCountPerNormalPlayer . ' character(s) without admin rights!';
-        }
-        return $errors;
-    }
+    // error checks that are not always needed
 
     public function check_non_admin_main_avatar() {
         $errors = array();
@@ -148,21 +140,33 @@ class Avatar extends BaseModel {
     public static function all($options) {
         $queryString = Avatar::SELECT_START_PART_PSQL;
         $param_arr = array();
-
+        $whereAsBoolean = true;
         if (isset($options['category']) && isset($options['category_value'])) {
-
+            $queryString = self::add_where_or_and_to_query($queryString, $whereAsBoolean);
+            
             $param_arr['id'] = $options['category_value'];
-            $queryString .= ' WHERE ' . $options['category'] . ' :id ';
+            $queryString .= Avatar::CATEGORY_TO_PSQL[$options['category']];
+            $where_is_set = true;
         }
         if (isset($options['search'])) {
-            $queryString .= ' AND Avatar.name LIKE :like ';
+            $queryString = self::add_where_or_and_to_query($queryString, $whereAsBoolean);
+            $queryString .= 'Avatar.name LIKE :like ';
             $param_arr['like'] = '%' . $options['search'] . '%';
+           // $where_is_set = true; ---add this more options come after
         }
         $queryString .= Avatar::ORDER_BY_PSQL;
         $query = DB::connection()->prepare($queryString);
         $query->execute($param_arr);
         $rows = $query->fetchAll();
         return Avatar::loop_many($rows);
+    }
+    
+    private static function add_where_or_and_to_query($queryString, $whereAsBoolean) {
+        if ($whereAsBoolean) {
+            return $queryString.' WHERE ';
+        } else {
+            return $queryString. ' AND ';
+        }
     }
 
     public static function findByPlayer($id) {

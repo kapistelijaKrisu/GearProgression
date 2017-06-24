@@ -5,9 +5,9 @@ INSERT INTO Element(name) VALUES ('booom');
 INSERT INTO Clas(name) VALUES ('noob');
 INSERT INTO Clas(name) VALUES ('wallet');
 
-INSERT INTO Player(name, password, admin) VALUES ('asd', 123, FALSE);
+INSERT INTO Player(name, password, admin) VALUES ('pleb', 'asd', FALSE);
 INSERT INTO Avatar(p_id, e_id, c_id, name, main) VALUES(
-    (SELECT id FROM Player WHERE name='asd'),
+    (SELECT id FROM Player WHERE name='pleb'),
     (SELECT id FROM Element WHERE name='booom'),
     (SELECT id FROM Clas WHERE name='noob'),
     'hajoon',

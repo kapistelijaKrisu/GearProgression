@@ -8,7 +8,7 @@ class Clas extends BaseModel {
         parent::__construct($attributes);
 
         $this->validators = array(
-            'validate_string_lengths' => array(array('min' => 2, 'max' => 20, 'attribute' => 'name'))
+            'validate_name' => array('min' => 3, 'max' => 20, 'attribute' => 'name'),
         );
     }
 

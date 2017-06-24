@@ -4,62 +4,18 @@
 <h1>{{avatar.name}}</h1>
 
 {% import "macros/messages.html" as msg %}
+{% import "macros/tables.html" as tbl %}
 {{msg.message("#{message}")}}
 {{msg.errors("#{errors}")}}
 
 <table class="table table-striped table-bordered">
-    <thead>
-        <tr>
-            <th><button type="button" class="btn btn-info">Main</button></th>
-            <th><button type="button" class="btn btn-success">Class</button></th>
-            <th><button type="button" class="btn btn-success">Element</button></th>
-            {% for item in items %}
-            <th><button type="button" class="btn btn-default">{{item.name}}</button></th>
-            {% endfor %}
-
-        </tr>
-    </thead>
-
+    {{tbl.avatar_tbl_header(items)}}
     <tbody>
-
-        <tr>
-            <td>
-                {% if avatar.main %}           
-                <label class="label label-success">Yes</label>
-                {% else %}
-                <label class="label label-danger">No</label>
-                {% endif %}
-            </td>
-            <td><label class="label label-info">{{avatar.clas.name}}</label></td> 
-            <td><label class="label label-info">{{avatar.element.name}}</label></td>
-
-            {% for item in items %}
-            <td>
-                {% if avatar.ownerships[item.id] %}
-                <label class="label label-success">owned</label>
-
-                {% if player.admin %}
-
-                <form method="post" action="{{base_path}}/character/{{avatar.id}}/deleteItem">
-                    <button type="submit" name="item" value="{{item.id}}" class="btn-danger">Delete</button>
-                </form>
-                {% endif %}
-                
-                {% else %}
-                <label class="label label-danger">RIP</label>
-                {% if avatar.owner_id == player.id or player.admin %}
-                <form method="post" action="{{base_path}}/character/{{avatar.id}}/addItem">
-                    <button type="submit" name="item" value="{{item.id}}" class="btn-success">Add</button>                   
-                </form>
-            
-            {% endif %}
-            
-            {% endif %}
-            </td>
-            {% endfor %}
-        </tr>
+        {{tbl.avatar_table_row(items, avatar, player,
+                    "#{base_path}"~"/character/"~"#{avatar.id}"~"/addItem",
+                    "#{base_path}"~"/character/"~"#{avatar.id}"~"/deleteItem")}}
     </tbody>
 </table>
-<li><a target="_blank"href="{{link}}">Stats on BnSTree</a></li>
+<a target="_blank"href="{{link}}">Stats on BnSTree</a>
 
 {% endblock %}

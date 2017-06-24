@@ -11,11 +11,12 @@ class BaseController {
         return null;
     }
 
-    public static function kick_non_admin() {
-        $admin = BaseController::get_user_logged_in();
+    public static function get_user_kick_non_admin() {
+        $admin = self::get_user_logged_in();
         if ($admin == null || $admin->admin == false) {
-            Redirect::to('/home', array('message' => 'You dont have the rights'));
+            Redirect::to('/home', array('errors' => array('You dont have the rights')));
         }
+        return $admin;
     }
 
     public static function check_logged_in() {
@@ -23,20 +24,12 @@ class BaseController {
             View::make('login.html', array('errors' => 'log in first please!'));
         }
     }
-
-    public static function check_admin() {
-        $player = get_user_logged_in();
-        if ($player == null || $player->admin == false) {
-            View::make('home.html', array('errors' => 'You dont have the rights'));
-        }
-    }
-
     public static function check_post_can_int($postIndex, $onFailRedirectTo) {
         try {
             if (isset($_POST[$postIndex])) {
                 (int) $_POST[$postIndex];
             } else {
-                Redirect::to($onFailRedirectTo, array('errors' => array($postIndex . ' is in invalid format!')));
+                Redirect::to($onFailRedirectTo, array('errors' => array($postIndex . ' is not found in post!')));
             }
         } catch (Exception $ex) {
             Redirect::to($onFailRedirectTo, array('errors' => array($postIndex . ' is in invalid format!')));

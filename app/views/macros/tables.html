@@ -1,3 +1,30 @@
+
+{% macro delete_table(title, content_array, actionPath) %}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <p class="d-inline">{{title}}</p>
+            </th>
+        </tr>                      
+    </thead>
+    <tbody>
+        {% for var in content_array %}
+        <tr>
+            <td><a>{{var.name}}</a></td>
+            <td><form method="post" action="{{actionPath}}">        
+                    <button type="submit" name="object" value="{{var.id}}" class="btn btn-danger">
+                        Delete
+                    </button></form>
+            </td>
+        </tr>
+        {% endfor %} 
+    </tbody>
+</table>
+
+{% endmacro %}
+
 {% macro array_link_names(title, link_path, content_array) %}
 <table class="table">
     <thead>
@@ -17,4 +44,61 @@
         {% endfor %}
     </tbody>
 </table>
+{% endmacro %}
+
+
+{% macro avatar_tbl_header(items) %}
+
+<thead>
+    <tr>
+        <th><p class="d-inline">Character</p></th>
+        <th><p class="d-inline">Main</p></th>
+        <th><p class="d-inline">Element</p></th>
+        <th><p class="d-inline">Class</p></th>
+
+        {% for item in items %}
+        <th><p class="d-inline">{{item.name}}</p></th>
+        {% endfor %}
+    </tr>
+</thead>
+
+{% endmacro %}
+
+
+{% macro avatar_table_row(items, avatar, player, addPath, deletePath) %}  
+<tr>
+    <td><a href="{{base_path}}/GearProgression/character/{{avatar.id}}">{{avatar.name}}</td>
+    <td>
+        {% if avatar.main %}           
+        <label class="label label-success">Yes</label>
+        {% else %}
+        <label class="label label-danger">No</label>
+        {% endif %}
+    </td>
+    <td><label class="label label-info">{{avatar.element.name}}</label></td>
+    <td><label class="label label-info">{{avatar.clas.name}}</label></td>
+
+ 
+    {% for item in items %}
+    {% if avatar.ownerships[item.id] %}    
+    <td><label class="label label-success">Owned</label>
+        {% if player.admin == true %}
+        <form method="post" action="{{deletePath}}">
+            <button type="submit" name="item" value="{{item.id}}" class="btn-primary">Delete</button>
+        </form>
+        {% endif %}
+    </td>
+
+    {% else %}
+    <td><label class="label label-danger">RIP</label>
+        {% if player.admin == true or player.id == avatar.owner_id %}
+        <form method="post" action="{{addPath}}">
+            <button type="submit" name="item" value="{{item.id}}" class="btn-primary">Add</button>
+        </form>
+        {% endif %}
+    </td>
+    {% endif %}
+    {% endfor %}
+</tr>
+
 {% endmacro %}

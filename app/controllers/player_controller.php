@@ -6,6 +6,8 @@ class PlayerController extends BaseController {
         $player = parent::get_user_logged_in();
         if ($player == null) {
             Redirect::to('/overview', array('message' => 'not logged in!'));
+        } else if ($player->id != $id) {
+            Redirect::to('/overview', array('message' => 'You can only access your own page...not others!'));
         }
         $items = Item::findAll();
         $avatars = Avatar::findByPlayer($id);
@@ -16,13 +18,15 @@ class PlayerController extends BaseController {
     }
 
     public static function renamePlayer() {
-        $params = $_POST;
-        $player = Player::findById(parent::get_user_logged_in()->id);
-
+        $player = parent::get_user_logged_in();
         if ($player == null) {
-            Redirect::to('/overview', array('message' => 'not logged in?'));
+            Redirect::to('/overview', array('errors' => array('Not logged in!')));
         }
-        $player->name = $params['player_name'];
+        if (!isset($_POST['name'])) {
+            Redirect::to('/overview', array('errors' => array('Missing name from post!')));
+        }
+
+        $player->name = $_POST['name'];
         $errors = $player->errors();
         if (sizeof($errors) == 0) {
             array_merge($errors, $player->check_name_is_unique());
@@ -37,31 +41,32 @@ class PlayerController extends BaseController {
     }
 
     public static function changePassword() {
-        $params = $_POST;
-        $player = Player::findById(parent::get_user_logged_in()->id);
+        $player = parent::get_user_logged_in();
 
         if ($player == null) {
-            Redirect::to('/overview', array('message' => 'You are not logged in!'));
+            Redirect::to('/overview', array('errors' => array('You are not logged in!')));
         }
-        $player->password = $params['player_pass'];
+        if (!isset($_POST['password'])) {
+            Redirect::to('/player/' . $player->id, array('errors' => array('missing player_pass from form')));
+        }
+        $player->password = $_POST['password'];
         $errors = $player->errors();
         if (sizeof($errors) == 0) {
             $player->passwordChange();
             Redirect::to('/player/' . $player->id, array('message' => 'Password change succesful!'));
         } else {
-            $att = array('playerName' => $player->name);
+            $att = array('password' => $player->password);
             Redirect::to('/player/' . $player->id, array('errors' => $errors, 'attributes' => $att));
         }
     }
 
     public static function deleteSelf() {
-        $params = $_SESSION;
-        $player = Player::findById($params['player']);
+        $player = parent::get_user_logged_in();
 
         if ($player == null) {
-            Redirect::to('/overview', array('errors' => 'How can you delete yourself when you do not exist?'));
+            Redirect::to('/overview', array('errors' => array('How can you delete yourself when you do not exist?')));
         } else if ($player->admin == true) {
-            Redirect::to('/player/' . $player->id, array('errors' => 'Admins are stuck here forever!'));
+            Redirect::to('/player/' . $player->id, array('errors' => array('Admins are stuck here forever!')));
         }
 
         $player->delete();
@@ -69,17 +74,21 @@ class PlayerController extends BaseController {
         Redirect::to('/overview', array('message' => 'Ciao!'));
     }
 
-    public static function renameOwnedChar($p_id, $a_id) {
+    public static function renameOwnedAvatar($p_id, $a_id) {
         $logged_in = parent::get_user_logged_in();
+
         if ($logged_in == null || $logged_in->id != $p_id) {
-            Redirect::to('/overview', array('message' => 'Not yours!'));
+            Redirect::to('/overview', array('errors' => array('Not yours!')));
+        }
+        if (!isset($_POST['avatar_name'])) {
+            Redirect::to('/overview', array('errors' => array('missing avatar_name form form!')));
         }
         $avatar = Avatar::findById($a_id);
         if ($avatar == null) {
             Redirect::to('/player/' . $p_id, array('errors' => 'Character does not exist!'));
         }
         if ($avatar->owner_id != $logged_in->id) {
-            Redirect::to('/overview', array('message' => 'De yours!'));
+            Redirect::to('/overview', array('message' => 'Not yours!'));
         }
 
         $avatar->name = $_POST['avatar_name'];
@@ -92,10 +101,7 @@ class PlayerController extends BaseController {
                 Redirect::to('/player/' . $p_id, array('message' => 'Character rename succesful!'));
             }
         }
-      
-       
-  
-      
+
         Redirect::to('/player/' . $logged_in->id, array('errors' => $errors, 'att' => array($avatar->id, $avatar->name)));
     }
 
@@ -104,7 +110,14 @@ class PlayerController extends BaseController {
         if ($logged_in == null) {
             Redirect::to('/overview', array('message' => 'De fuc?'));
         }
-
+        parent::check_post_can_int('element', '/player/' . $logged_in->id);
+        parent::check_post_can_int('class', '/player/' . $logged_in->id);
+        if (!isset($_POST['character'])) {
+            Redirect::to('/player/' . $logged_in->id, array('errors' => array('name is missing!')));
+        }
+        if (!isset($_POST['priority'])) {
+            Redirect::to('/player/' . $logged_in->id, array('errors' => array('priority is missing!')));
+        }
         $main = false;
         if ($_POST['priority'] == 'main') {
             $main = true;
@@ -119,30 +132,26 @@ class PlayerController extends BaseController {
 
         $avatar = new Avatar($attributes);
         $errors = $avatar->errors();
-        $arr = array();
+
         if (sizeof($errors) == 0) {
             $errors = array_merge($errors, $avatar->check_name_is_unique());
-            $errors = array_merge($errors, $avatar->check_non_admin_avatar_limit_count());
             $errors = array_merge($errors, $avatar->check_non_admin_main_avatar());
 
             if (sizeof($errors) == 0) {
                 $avatar->store();
                 $items = Item::findAll();
-
                 foreach ($items as $item) {
                     if (isset($_POST[$item->id])) {
                         $toSave = new Ownership(array('a_id' => $avatar->id, 'i_id' => $item->id));
                         $toSave->store();
-                        
                     }
                 }
                 Redirect::to('/player/' . $logged_in->id, array('message' => 'Character has been listed!'));
             }
-            
-        }   
+        }
+        $arr = array();
         $arr['charName'] = $avatar->name;
-                Redirect::to('/player/' . $logged_in->id, array('errors' => $errors, 'attributes' => $arr));
-    
+        Redirect::to('/player/' . $logged_in->id, array('errors' => $errors, 'attributes' => $arr));
     }
 
 }

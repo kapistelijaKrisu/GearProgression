@@ -10,7 +10,12 @@
 <div class="form-group">
     <form method="get" action="{{base_path}}/overview">
         <label>View character</label>
-        <input type="text" name="search" class="form-group" placeholder="Seach by Name"> 
+        <input type="text" name="search" class="form-group" 
+               {% if search %}
+               value="{{search}}"
+               {% else %}
+               placeholder="Seach by Name"
+               {% endif %}>
         <button type="submit" class="btn btn-info">Visit</button>        
     </form>
 </div>

@@ -3,21 +3,37 @@
 class AdminAvatarController extends BaseController {
 
     public static function adminPage() {
-        parent::kick_non_admin();
-        $everything = array(
-            'player' => parent::get_user_logged_in(),
+        $admin = parent::get_user_kick_non_admin();
+        $data = array(
+            'player' => $admin,
             'classes' => Clas::all(),
             'elements' => Element::all(),
             'items' => Item::findAll(),
             'players' => Player::findAll(),
             'avatars' => Avatar::all(array()));
-        View::make('admin_avatar.html', $everything);
+        View::make('admin_avatar.html', $data);
+    }
+    
+    public static function mod_avatar() {
+        parent::get_user_kick_non_admin();
+        parent::check_post_can_int('avatar', '/admin/character');
+        if (!isset($_POST['mod'])) {
+            Redirect::to('/admin/character', array('errors' => array('Missing mod value from post')));
+        }
+        
+        if ($_POST['mod'] == 'delete') {
+            self::delete();
+        } else if ($_POST['mod'] == 'rename') {
+            if(!isset($_POST['avatar_name'])) {
+                Redirect::to('/admin/character', array('errors' => array('Missing avatar_name from post!')));
+            }
+            self::renameAvatar();
+        } else {
+            Redirect::to('/admin/character', array('errors' => array('This mod value is not registered!')));
+        }
     }
 
-    public static function delete() {
-        parent::kick_non_admin();
-        parent::check_post_can_int('avatar', '/admin/character');
-
+    private static function delete() {
         $avatar = Avatar::findById($_POST['avatar']);
         if ($avatar == null) {
             Redirect::to('/admin/character', array('errors' => array('Character does not exist!')));
@@ -26,10 +42,37 @@ class AdminAvatarController extends BaseController {
             Redirect::to('/admin/character', array('message' => 'Character deleted!'));
         }
     }
+    
+    private static function renameAvatar() {
+        $avatar = Avatar::findById($_POST['avatar']);
+        if ($avatar == null) {
+            Redirect::to('/admin/character' . $p_id, array('errors' => 'Character does not exist!'));
+        }
+        $avatar->name = $_POST['avatar_name'];        
+        $errors = $avatar->errors();
+
+        if (sizeof($errors) == 0) {
+            $errors = array_merge($errors, $avatar->check_name_is_unique());
+            if (sizeof($errors) == 0) {
+                $avatar->changeName();
+                Redirect::to('/admin/character', array('message' => 'Character rename succesful!'));
+            }
+        }
+        $att = array('avatar_name' => $avatar->name);
+        Redirect::to('/admin/character', array('errors' => $errors, 'attributes' => $att));
+    }
 
     public static function store_avatar() {
-        parent::kick_non_admin();
-
+        parent::get_user_kick_non_admin();
+        parent::check_post_can_int('element', '/admin/character');
+        parent::check_post_can_int('class', '/admin/character');
+        parent::check_post_can_int('player', '/admin/character');
+        if (!isset($_POST['character'])) {
+            Redirect::to('/admin/character', array('errors' => array('name is missing!')));
+        }
+        if (!isset($_POST['priority'])) {
+            Redirect::to('/admin/character', array('errors' => array('priority is missing!')));
+        }
         $main = false;
         if ($_POST['priority'] == 'main') {
             $main = true;
@@ -45,10 +88,9 @@ class AdminAvatarController extends BaseController {
 
         $avatar = new Avatar($avatar_att);
         $errors = $avatar->errors();
-
+        
         if (sizeof($errors) == 0) {
             $errors = array_merge($errors, $avatar->check_name_is_unique());
-            $errors = array_merge($errors, $avatar->check_non_admin_avatar_limit_count());
             $errors = array_merge($errors, $avatar->check_non_admin_main_avatar());
             if (sizeof($errors) == 0) {
                 $avatar->store();
