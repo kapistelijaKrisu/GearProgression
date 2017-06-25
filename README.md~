@@ -10,8 +10,11 @@ normi user nimi: pleb
 normi user salasana: asd
 
 
-* [Linkki sovellukseeni](http://kbvalto.users.cs.helsinki.fi/GearProgression)
-* [Linkki asetuksiin](http://kbvalto.users.cs.helsinki.fi/GearProgression/admin)
+* [Linkki sovellukseeni](http://kbvalto.users.cs.helsinki.fi/GearProgression/home)
+* [Linkki listaukseen](http://kbvalto.users.cs.helsinki.fi/GearProgression/overview)
+* [Linkki pelaajan asetuksiin](http://kbvalto.users.cs.helsinki.fi/GearProgression/admin/player)
+* [Linkki hahmojen asetuksiin](http://kbvalto.users.cs.helsinki.fi/GearProgression/admin/character)
+* [Linkki confaus asetuksiin](http://kbvalto.users.cs.helsinki.fi/GearProgression/admin/config)
 * [Linkki kirjautumiseen](http://kbvalto.users.cs.helsinki.fi/GearProgression/login)
 * [Linkki pelaajan sivulle](http://kbvalto.users.cs.helsinki.fi/GearProgression/player/1)
 * [Linkki yksittäiselle hahmon sivulle](http://kbvalto.users.cs.helsinki.fi/GearProgression/character/1)
