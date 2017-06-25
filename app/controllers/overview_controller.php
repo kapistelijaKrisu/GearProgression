@@ -3,7 +3,6 @@
 class OverviewController extends BaseController {
 
     public static function list_characters() {
-        Kint::dump($_POST);
         $arr = array();
         $html_arr = array();
         if (isset($_GET['search'])) {
