@@ -27,7 +27,9 @@ class BaseController {
     public static function check_post_can_int($postIndex, $onFailRedirectTo) {
         try {
             if (isset($_POST[$postIndex])) {
-                (int) $_POST[$postIndex];
+                if ((int) $_POST[$postIndex] == 0) {
+                    Redirect::to($onFailRedirectTo, array('errors' => array($postIndex . ' is in invalid format! 0 is not acceptable either')));
+                }
             } else {
                 Redirect::to($onFailRedirectTo, array('errors' => array($postIndex . ' is not found in post!')));
             }
@@ -38,7 +40,10 @@ class BaseController {
 
     public static function check_param_can_int($value, $onFailRedirectTo) {
         try {
-            (int) $value;
+            if ((int) $value == 0) {
+                Redirect::to($onFailRedirectTo, array('errors' => array('value is in invalid format! 0 is not acceptable either!')));
+            }
+            
         } catch (Exception $ex) {
             Redirect::to($onFailRedirectTo, array('errors' => array('value is in invalid format!')));
         }

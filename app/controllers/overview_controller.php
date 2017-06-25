@@ -3,6 +3,7 @@
 class OverviewController extends BaseController {
 
     public static function list_characters() {
+        Kint::dump($_POST);
         $arr = array();
         $html_arr = array();
         if (isset($_GET['search'])) {
@@ -12,7 +13,11 @@ class OverviewController extends BaseController {
 
         $html_arr['avatars'] = Avatar::all($arr);
         if (sizeof($html_arr['avatars']) == 0) {
-            Redirect::to('/home', array('errors' => array('No characters found by that name!'), 'search' => $arr['search']));
+            $array = array('errors' => array('No characters found by that name!'));
+            if (isset($arr['search'])) {
+                $array['search'] = $arr['search'];
+            }
+            Redirect::to('/home', $array);
         }
         $html_arr['items'] = Item::findAll();
         $html_arr['player'] = parent::get_user_logged_in();

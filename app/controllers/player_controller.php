@@ -4,6 +4,7 @@ class PlayerController extends BaseController {
 
     public static function myPage($id) {
         $logged_in = parent::get_user_logged_in();
+        parent::check_param_can_int($id, '/home');
         if ($logged_in == null) {
             Redirect::to('/overview', array('errors' => array('Log in first to see your page!')));
         } else if ($logged_in->id != $id) {
@@ -76,12 +77,13 @@ class PlayerController extends BaseController {
 
     public static function renameOwnedAvatar($p_id, $a_id) {
         $logged_in = parent::get_user_logged_in();
-
+        parent::check_param_can_int($p_id, '/home');
+        parent::check_param_can_int($a_id, '/home');
         if ($logged_in == null || $logged_in->id != $p_id) {
-            Redirect::to('/overview', array('errors' => array('Not yours!')));
+            Redirect::to('/home', array('errors' => array('Not yours!')));
         }
         if (!isset($_POST['avatar_name'])) {
-            Redirect::to('/overview', array('errors' => array('missing avatar_name form form!')));
+            Redirect::to('/home', array('errors' => array('missing avatar_name form form!')));
         }
         $avatar = Avatar::findById($a_id);
         if ($avatar == null) {

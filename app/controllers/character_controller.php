@@ -3,9 +3,10 @@
 class AvatarController extends BaseController {
 
     public static function characterPage($id) {
+        parent::check_param_can_int($id, '/home');
         $avatar = Avatar::findById($id);
         if ($avatar == null) {
-            Redirect::to('/overview', array('errors' => array('Character does not exist!')));
+            Redirect::to('/home', array('errors' => array('Character does not exist!')));
         }
         $items = Item::findAll();
         $nameFormatted = str_replace(' ', '%20', $avatar->name);

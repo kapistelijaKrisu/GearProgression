@@ -89,7 +89,9 @@ class BaseModel {
         try {
             foreach ($nameArr as $asName) {
                 $param = $this->{$asName};
-                (int) $param;
+                if ((int) $param == 0) {
+                    $errors[] = 'value has to be integer! zero is not a valid number either';
+                }
             }
         } catch (Exception $ex) {
             $errors[] = 'value has to be integer!';
