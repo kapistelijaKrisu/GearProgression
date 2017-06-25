@@ -1,6 +1,7 @@
 <?php
 
 class Player extends BaseModel {
+    const avatarLimit = 5;
     public $id, $name, $password, $admin;
 
     public function __construct($attributes) {
@@ -84,6 +85,15 @@ class Player extends BaseModel {
             return $player;
         }
         return null;
+    }
+    
+    public static function avatarCount($player_id) {
+        $query = DB::connection()->prepare('SELECT COUNT(Avatar.id) as count FROM Player LEFT JOIN Avatar ON Player.id = Avatar.p_id WHERE Player.id = :id');
+        $query->execute(array(
+            'id' => $player_id
+        ));
+        $row = $query->fetch();
+        return $row['count'];
     }
 
     public function store() {

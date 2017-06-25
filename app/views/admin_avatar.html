@@ -4,6 +4,7 @@
 <h1>Admin Page</h1>
 {% import "macros/messages.html" as msg %}
 {% import "macros/forms.html" as forms %}
+{% import "macros/tables.html" as tbls %}
 {{msg.message("#{message}")}}
 {{msg.errors("#{errors}")}}
 
@@ -37,13 +38,23 @@
         <input type="text" name="avatar_name" class="form-inline" value="{{attributes.avatar_name}}">
         <br>
         <select name="avatar" class="col-xs-3">
+            {% set arrow = -1 %}
             {% for avatar in avatars %}
-            <option name="avatar" value="{{avatar.id}}">{{avatar.name}}</option>
+            {% set arrow = avatar.owner_id %}
+            <option name="avatar" value="{&quot;id&quot:{{avatar.id}}, &quot;owner&quot;:{{avatar.owner_id}}}">{{avatar.name}}</option>
+           
             {% endfor %}
         </select>     
         <button type="submit" name="mod" value="rename" class="btn btn-primary">Rename</button>
+        <button type="submit" name="mod" value="details" class="btn btn-primary">List owner details</button>
         <button type="submit" name="mod" value="delete" class="btn btn-danger">Delete character</button>
+        <button type="submit" name="mod" value="deleteAll" class="btn btn-danger">Delete owner and all its data</button>        
     </form>
 </div>
-
+{% if owner %}
+<br>
+<div>
+    {{ tbls.array_link_names("Characters of "~owner.name, "character", owner_avatars)}}
+</div>
+{% endif %}
 {% endblock %}

@@ -4,6 +4,7 @@
 <h1>Player configuration</h1>
 {% import "macros/messages.html" as msg %}
 {% import "macros/forms.html" as forms %}
+{% import "macros/tables.html" as tbls %}
 {{msg.message("#{message}")}}
 {{msg.errors("#{errors}")}}
 <br>
@@ -18,9 +19,9 @@
 <div>
     <form method="post" action="{{base_path}}/admin/modPlayer">
 
-        <select name="player" class="col-xs-3">
+        <select class="col-xs-3" name="player">
             {% for p in players %}
-            <option name="avatar" value="{{p.id}}">{{p.name}}
+            <option value="{&quot;id&quot:{{p.id}}, &quot;name&quot;:&quot; {{p.name}} &quot;}">{{p.name}}
                 {% if p.admin %}
                 -Admin
                 {% else %}
@@ -31,7 +32,11 @@
         </select>
         <button type="submit" name="mod" value="reset_password" class="btn btn-primary">Reset password to "asd"</button>
         <button type="submit" name="mod" value="delete" class="btn btn-danger">Delete</button>
+        <button type="submit" name="mod" value="search" class="btn btn-primary">List avatars</button>
     </form>
 </div>
 
+{% if avatars and searched %}
+{{ tbls.array_link_names("Characters of "~searched, "character", avatars)}}
+{% endif %}
 {% endblock %}

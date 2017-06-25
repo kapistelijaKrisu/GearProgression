@@ -13,28 +13,39 @@ class AdminAvatarController extends BaseController {
             'avatars' => Avatar::all(array()));
         View::make('admin_avatar.html', $data);
     }
-    
+
     public static function mod_avatar() {
         parent::get_user_kick_non_admin();
-        parent::check_post_can_int('avatar', '/admin/character');
-        if (!isset($_POST['mod'])) {
-            Redirect::to('/admin/character', array('errors' => array('Missing mod value from post')));
+        if (!isset($_POST['mod']) || !isset($_POST['avatar'])) {
+            Redirect::to('/admin/character', array('errors' => array('Missing mod or avatar value from post')));
         }
-        
+        $jsAvatar = json_decode($_POST['avatar'], true);
+        if ($jsAvatar == null || !isset($jsAvatar['id'])) {
+            Redirect::to('/admin/character', array('errors' => array('json of avatar is invalid')));
+        }
+
         if ($_POST['mod'] == 'delete') {
-            self::delete();
+            parent::check_param_can_int($jsAvatar['id'], '/admin/character');
+            self::delete($jsAvatar);
         } else if ($_POST['mod'] == 'rename') {
-            if(!isset($_POST['avatar_name'])) {
+            parent::check_param_can_int($jsAvatar['id'], '/admin/character');
+            if (!isset($_POST['avatar_name'])) {
                 Redirect::to('/admin/character', array('errors' => array('Missing avatar_name from post!')));
             }
-            self::renameAvatar();
+            self::renameAvatar($jsAvatar);
+        } else if ($_POST['mod'] == 'deleteAll') {
+            parent::check_param_can_int($jsAvatar['owner'], '/admin/character');
+            self::deleteOwnerOfAvatar($jsAvatar);
+        } else if ($_POST['mod'] == 'details') {
+            parent::check_param_can_int($jsAvatar['owner'], '/admin/character');
+            self::listDetailsOfOwner($jsAvatar);
         } else {
             Redirect::to('/admin/character', array('errors' => array('This mod value is not registered!')));
         }
     }
 
-    private static function delete() {
-        $avatar = Avatar::findById($_POST['avatar']);
+    private static function delete($jsAvatar) {
+        $avatar = Avatar::findById($jsAvatar['id']);
         if ($avatar == null) {
             Redirect::to('/admin/character', array('errors' => array('Character does not exist!')));
         } else {
@@ -42,13 +53,35 @@ class AdminAvatarController extends BaseController {
             Redirect::to('/admin/character', array('message' => 'Character deleted!'));
         }
     }
-    
-    private static function renameAvatar() {
-        $avatar = Avatar::findById($_POST['avatar']);
+
+    private static function deleteOwnerOfAvatar($jsAvatar) {
+        $owner = Player::findById($jsAvatar['owner']);
+        if ($owner == null) {
+            Redirect::to('/admin/character', array('errors' => array('Player does not exist!')));
+        } else if ($owner->admin == true) {
+            Redirect::to('/admin/character', array('errors' => array('Admins cannot be deleted!')));
+        } else {
+            $owner->delete();
+            Redirect::to('/admin/character', array('message' => 'Player and all its characters have been deleted!'));
+        }
+    }
+
+    private static function listDetailsOfOwner($jsAvatar) {
+        $player = Player::findById($jsAvatar['owner']);
+        if ($player == null) {
+            Redirect::to('/admin/character', array('errors' => array('Player does not exist!')));
+        } else {
+            $avatars = Avatar::findByPlayer($jsAvatar['owner']);
+            Redirect::to('/admin/character', array('message' => 'Search completed!', 'owner' => $player, 'owner_avatars' => $avatars));
+        }
+    }
+
+    private static function renameAvatar($jsAvatar) {
+        $avatar = Avatar::findById($jsAvatar['id']);
         if ($avatar == null) {
             Redirect::to('/admin/character' . $p_id, array('errors' => 'Character does not exist!'));
         }
-        $avatar->name = $_POST['avatar_name'];        
+        $avatar->name = $_POST['avatar_name'];
         $errors = $avatar->errors();
 
         if (sizeof($errors) == 0) {
@@ -63,7 +96,7 @@ class AdminAvatarController extends BaseController {
     }
 
     public static function store_avatar() {
-        parent::get_user_kick_non_admin();
+        $logged_in = parent::get_user_kick_non_admin();
         parent::check_post_can_int('element', '/admin/character');
         parent::check_post_can_int('class', '/admin/character');
         parent::check_post_can_int('player', '/admin/character');
@@ -88,7 +121,7 @@ class AdminAvatarController extends BaseController {
 
         $avatar = new Avatar($avatar_att);
         $errors = $avatar->errors();
-        
+
         if (sizeof($errors) == 0) {
             $errors = array_merge($errors, $avatar->check_name_is_unique());
             $errors = array_merge($errors, $avatar->check_non_admin_main_avatar());

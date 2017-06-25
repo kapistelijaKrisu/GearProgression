@@ -1,7 +1,6 @@
 <?php
 
 class Avatar extends BaseModel {
-
     const SELECT_START_PART_PSQL = 'SELECT'
             . ' Avatar.id, Avatar.name, Avatar.main,'
             . ' Avatar.c_id, Avatar.e_id,'
@@ -38,7 +37,7 @@ class Avatar extends BaseModel {
         );
     }
 
-    // error checks that are not always needed
+    // error check that technically are possible
 
     public function check_non_admin_main_avatar() {
         $errors = array();
